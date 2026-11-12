@@ -15,6 +15,24 @@ export default antfu(
     },
   },
   {
+    rules: {
+      // Files in `public/` are served as-is: reference them by URL (`/og/default.png`).
+      // Importing them duplicates the file under `/_astro/`. Assets that need
+      // processing belong in `src/assets/` (`@/assets/...`).
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              regex: '^(?:~/|(?:\\.\\./)+)public(?:/|$)',
+              message: 'Do not import from public/. Reference the file by its URL (e.g. "/og/default.png") or move it to src/assets/ and import it with "@/assets/...".',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
     // Prettier formats whole .astro files (frontmatter, template and <script>).
     // These stylistic rules disagree with it there and cause circular fixes.
     files: GLOB_ASTRO_ALL,
@@ -28,6 +46,6 @@ export default antfu(
   },
 )
   // antfu sets a plain parser on .astro when Prettier formats them, which skips
-  // every JS rule in the frontmatter. Keep the Astro parser so imports and
-  // unused variables are checked there too.
+  // every JS rule in the frontmatter. Keep the Astro parser so imports,
+  // unused variables and the `public/` restriction are checked there too.
   .override('antfu/formatter/astro', ({ languageOptions: _, ...config }) => config)
