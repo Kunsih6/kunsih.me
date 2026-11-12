@@ -60,6 +60,8 @@ export interface CV {
     eyebrow: string
     title: string
     mailLabel: string
+    /** Address shown and linked in the contact section. */
+    email: string
     pitch: string
     emailCta: string
     linkedinCta: string
@@ -240,6 +242,7 @@ const en: CV = {
     eyebrow: 'Next step',
     title: 'Contact',
     mailLabel: 'Write to me',
+    email: 'contact@kunsih.me',
     pitch: 'I\'m looking to keep growing in frontend, full stack or software engineering roles, and toward technical leadership or product management. Remote or hybrid.',
     emailCta: 'Send an email',
     linkedinCta: 'Connect on LinkedIn',
@@ -420,6 +423,7 @@ const es: CV = {
     eyebrow: 'Siguiente paso',
     title: 'Contacto',
     mailLabel: 'Escríbeme',
+    email: 'contacto@kunsih.me',
     pitch: 'Busco seguir creciendo en roles de frontend, full stack o ingeniería de software, y hacia liderazgo técnico o Product Management. Remoto o híbrido.',
     emailCta: 'Escribir un correo',
     linkedinCta: 'Conectar en LinkedIn',

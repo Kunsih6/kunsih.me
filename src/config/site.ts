@@ -2,7 +2,6 @@
 export const site = {
   brand: 'KUNSIH',
   author: 'Estuardo Aguirre',
-  email: 'estuardoa25@gmail.com',
   location: {
     city: 'Quetzaltenango',
     country: 'Guatemala',

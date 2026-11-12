@@ -7,7 +7,7 @@ import { cv } from '@/data/cv'
 import { getLang } from '@/i18n/utils'
 
 const { contact } = cv[getLang(Astro.currentLocale)]
-const [mailUser, mailDomain] = site.email.split('@')
+const [mailUser, mailDomain] = contact.email.split('@')
 ---
 
 <SectionLayout id="contact" class="contact" spacing="none" aria-labelledby="contact-title">
@@ -20,7 +20,7 @@ const [mailUser, mailDomain] = site.email.split('@')
 
     <div class="mail-group" data-reveal="up">
       <p class="t-label inv-muted">{contact.mailLabel}</p>
-      <a href={`mailto:${site.email}`} class="mail">
+      <a href={`mailto:${contact.email}`} class="mail">
         <span>{mailUser}</span>
         <span>@{mailDomain}</span>
       </a>
@@ -31,7 +31,7 @@ const [mailUser, mailDomain] = site.email.split('@')
         {contact.pitch}
       </p>
       <div class="actions" data-reveal="up" data-reveal-delay="100">
-        <ButtonLink href={`mailto:${site.email}`} inverse>
+        <ButtonLink href={`mailto:${contact.email}`} inverse>
           {contact.emailCta}
         </ButtonLink>
         <ButtonLink href={site.social.linkedin} variant="ghost" inverse external>
