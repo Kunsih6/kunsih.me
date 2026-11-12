@@ -26,6 +26,13 @@ Defined in `tsconfig.json` (`compilerOptions.paths`):
 
 Never import from `public/` (`~/public/...` or `../public/...`): ESLint rejects it. Files in `public/` are served as-is, so reference them by URL (`/og/default.png`). Assets that Astro should process or optimize go in `src/assets/` and are imported with `@/assets/...`.
 
+## i18n
+
+- Interface strings live in `src/i18n/langs/<lang>.ts`, one file per language, and `src/i18n/ui.ts` combines them. Group them in nested objects by area (`seo: { title, description }`), not flat dotted keys (`'seo.title'`).
+- `en.ts` defines the shape (`Messages`); other language files use `satisfies Messages`, so the type checker (editor or `tsc --noEmit`) flags a missing or extra key.
+- Read strings with `t('seo.title')` from `useTranslations(lang)`. Its dotted keys (`UIKey`) are derived from `Messages`.
+- Don't add plural variants of units (years, months, ...) to the message files. Format them with `Intl.NumberFormat` (`style: 'unit'`), which picks the plural form per locale (see `src/utils/date.ts`).
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
