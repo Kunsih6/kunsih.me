@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
+    "preview": "astro build && wrangler dev",
+    "cf:deploy": "astro build && wrangler deploy",
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
@@ -24,6 +25,7 @@
     "eslint-plugin-format": "^2.0.1",
     "prettier": "^3.9.10",
     "prettier-plugin-astro": "^1.1.2",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "wrangler": "^4.160.0"
   }
 }
