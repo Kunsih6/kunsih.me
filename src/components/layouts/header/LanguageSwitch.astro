@@ -7,7 +7,7 @@ const lang = getLang(Astro.currentLocale)
 const t = useTranslations(lang)
 ---
 
-<nav aria-label={t('lang.label')} class="lang t-label" data-lang-switch>
+<nav aria-label={t('lang.label')} class="lang t-label" data-lang-switch data-lang={lang}>
   {locales.map((l, i) => (
     <>
       {i > 0 && <span aria-hidden="true">/</span>}
@@ -26,6 +26,8 @@ const t = useTranslations(lang)
 </nav>
 
 <script>
+  const switches = [...document.querySelectorAll<HTMLElement>('[data-lang-switch]')]
+
   for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-lang-switch] a[hreflang]')) {
     link.addEventListener('click', () => {
       try {
@@ -33,6 +35,22 @@ const t = useTranslations(lang)
       } catch {}
     })
   }
+
+  /*
+   * A browser that translates the page (Chrome, Safari, Firefox) changes the `lang` of <html>, and
+   * Chrome also adds a `translated-ltr` or `translated-rtl` class. The page then shows neither of
+   * the site's versions, and the browser would translate the one the switch opens too, so the
+   * switch hides until the translation is turned off.
+   */
+  const root = document.documentElement
+  function hideWhileTranslated() {
+    const marked = root.classList.contains('translated-ltr') || root.classList.contains('translated-rtl')
+    for (const nav of switches) {
+      nav.hidden = marked || root.lang !== nav.dataset.lang
+    }
+  }
+  hideWhileTranslated()
+  new MutationObserver(hideWhileTranslated).observe(root, { attributes: true, attributeFilter: ['lang', 'class'] })
 </script>
 
 <style>
@@ -41,6 +59,10 @@ const t = useTranslations(lang)
     align-items: center;
     gap: 6px;
     color: var(--ink-muted);
+  }
+
+  .lang[hidden] {
+    display: none;
   }
 
   .lang a[aria-current='page'] {

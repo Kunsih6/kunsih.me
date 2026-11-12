@@ -38,6 +38,7 @@ Never import from `public/` (`~/public/...` or `../public/...`): ESLint rejects 
 - `en.ts` defines the shape (`Messages`); other language files use `satisfies Messages`, so the type checker (editor or `tsc --noEmit`) flags a missing or extra key.
 - Read strings with `t('seo.title')` from `useTranslations(lang)`. Its dotted keys (`UIKey`) are derived from `Messages`.
 - The URL sets the language (`/` English, `/es/` Spanish). The header's language switch (`header/LanguageSwitch.astro`) saves the visitor's pick in `localStorage` (`lang`), and `LanguageRedirect.astro`, which `BaseLayout.astro` renders on the default home page only, sends a returning visitor to the home page of that language. Never redirect by browser language: a visitor without a saved pick, and every crawler, gets the page at its URL.
+- The language switch hides while a browser translates the page, which it detects by the change to the `lang` of `<html>` that Chrome, Safari and Firefox make (Chrome also adds a `translated-ltr` or `translated-rtl` class). Never change `<html lang>` from a script: the switch would hide.
 - Don't add plural variants of units (years, months, ...) to the message files. Format them with `Intl.NumberFormat` (`style: 'unit'`), which picks the plural form per locale (see `src/utils/date.ts`).
 
 ## Motion
