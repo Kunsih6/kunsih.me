@@ -13,9 +13,9 @@ export const site = {
     linkedin: 'https://www.linkedin.com/in/kunsih6',
     github: 'https://github.com/Kunsih6',
   },
-  // Default Open Graph / Twitter image, served from `public/`.
+  // Size of the share cards (Open Graph / Twitter) built per language at `/og/<lang>.png`
+  // by src/pages/og/[lang].png.ts.
   ogImage: {
-    src: '/og/default.png',
     width: 1200,
     height: 630,
   },
