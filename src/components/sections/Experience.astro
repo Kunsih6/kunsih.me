@@ -35,7 +35,7 @@ const { roles } = experience
           type="button"
           id={`${role.id}-tab`}
           class="tab"
-          aria-expanded={String(i === 0)}
+          aria-expanded={i === 0 ? 'true' : 'false'}
           aria-controls={`${role.id}-panel`}
           style={`--row: ${i + 1}`}
           data-tab

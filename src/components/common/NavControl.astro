@@ -5,14 +5,22 @@ import type { HTMLAttributes } from 'astro/types'
  * A link or button in a navigation bar: label type, a 44px target, muted until hovered.
  * With `href` it renders an <a>, otherwise a <button type="button">. The parent adds its own
  * `class` for spacing and states; its scoped styles apply through the spread attributes.
+ * Neither variant takes `type`: <Tag> must accept the props of both elements, and a link's
+ * `type` (any MIME type) clashes with a button's (`button`, `submit`, `reset`).
  */
-type Props = (HTMLAttributes<'a'> & { href: string }) | (Omit<HTMLAttributes<'button'>, 'href'> & { href?: undefined })
+type Props =
+  | (Omit<HTMLAttributes<'a'>, 'type'> & { href: string })
+  | (Omit<HTMLAttributes<'button'>, 'href' | 'type'> & { href?: undefined })
 
 const { class: className, ...rest } = Astro.props
 const Tag = rest.href === undefined ? 'button' : 'a'
 ---
 
-<Tag class:list={['nav-control', 't-label', className]} {...(Tag === 'button' ? { type: 'button' } : {})} {...rest}>
+<Tag
+  class:list={['nav-control', 't-label', className]}
+  {...(Tag === 'button' ? { type: 'button' as const } : {})}
+  {...rest}
+>
   <slot />
 </Tag>
 
