@@ -190,7 +190,7 @@ const en: CV = {
   },
   stack: {
     eyebrow: 'Stack',
-    title: 'Frontend first, backend when it\'s needed.',
+    title: 'Frontend specialist, full stack engineer.',
     groups: [
       {
         title: 'Frontend',
@@ -371,7 +371,7 @@ const es: CV = {
   },
   stack: {
     eyebrow: 'Stack',
-    title: 'Frontend primero, backend cuando hace falta.',
+    title: 'Especialista en frontend, ingeniero full stack.',
     groups: [
       {
         title: 'Frontend',
