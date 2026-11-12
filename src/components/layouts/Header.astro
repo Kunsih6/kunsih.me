@@ -1,5 +1,6 @@
 ---
 import Icon from '@/components/common/Icon.astro'
+import Wordmark from '@/components/common/Wordmark.astro'
 import { site } from '@/config/site'
 import { languages, locales } from '@/i18n/ui'
 import { getLang, localizedPath, useTranslations } from '@/i18n/utils'
@@ -23,8 +24,10 @@ const links = [
 <header class="header">
   <div class="bar gutter">
     <a href={minimal ? home : '#top'} class="brand">
-      {site.brand}
-      <span class="sr-only"> — {t('a11y.home')}</span>
+      <Wordmark />
+      <span class="sr-only">
+        {site.brand} — {t('a11y.home')}
+      </span>
     </a>
 
     {!minimal && (
@@ -123,12 +126,9 @@ const links = [
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    font-family: var(--font-display);
-    font-weight: 800;
+    /* Sizes the wordmark, which is set in em. */
     font-size: 15px;
-    letter-spacing: -0.02em;
     color: var(--ink);
-    text-decoration: none;
   }
 
   .links {

@@ -1,5 +1,6 @@
 ---
 import ButtonLink from '@/components/common/ButtonLink.astro'
+import Wordmark from '@/components/common/Wordmark.astro'
 import { site } from '@/config/site'
 import { cv } from '@/data/cv'
 import { getLang } from '@/i18n/utils'
@@ -17,12 +18,8 @@ const { hero } = cv[getLang(Astro.currentLocale)]
     </div>
 
     <div class="word" role="img" aria-label={site.brand}>
-      <span class="ghost" aria-hidden="true">
-        {site.brand}
-      </span>
-      <span class="solid" aria-hidden="true">
-        {site.brand}
-      </span>
+      <Wordmark outline class="ghost" />
+      <Wordmark class="solid" />
       <span class="corner tl" aria-hidden="true"></span>
       <span class="corner tr" aria-hidden="true"></span>
       <span class="corner br" aria-hidden="true"></span>
@@ -79,30 +76,27 @@ const { hero } = cv[getLang(Astro.currentLocale)]
     display: grid;
     width: fit-content;
     max-width: 100%;
-    padding-bottom: 0.4em;
-    font-family: var(--font-display);
-    font-weight: 800;
-    font-size: clamp(48px, 17vw, 280px);
-    line-height: 0.9;
-    letter-spacing: -0.02em;
-    white-space: nowrap;
-    user-select: none;
-  }
-
-  .ghost,
-  .solid {
-    grid-area: 1 / 1;
-  }
-
-  .ghost {
-    transform: translateY(0.4em);
-    color: transparent;
-    -webkit-text-stroke: 1px var(--ink);
-  }
-
-  .solid {
-    position: relative;
+    /* Room between the letters and the corner brackets; the echo hangs 0.4em lower. */
+    padding: 0.07em 0.07em 0.47em;
     color: var(--ink);
+    /* Sizes the wordmark, which is set in em. */
+    font-size: clamp(48px, 17vw, 280px);
+  }
+
+  .word :global(.ghost),
+  .word :global(.solid) {
+    grid-area: 1 / 1;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .word :global(.ghost) {
+    transform: translateY(0.4em);
+  }
+
+  /* Painted over the transformed echo, so the filled letters hide its lines. */
+  .word :global(.solid) {
+    position: relative;
   }
 
   .corner {
