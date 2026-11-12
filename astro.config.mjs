@@ -1,10 +1,31 @@
 // @ts-check
+import { rename, rmdir } from 'node:fs/promises'
 import sitemap from '@astrojs/sitemap'
 import { defineConfig, fontProviders } from 'astro/config'
 
 // Keep in sync with `src/i18n/ui.ts`.
 const defaultLocale = 'en'
 const locales = ['en', 'es']
+
+/**
+ * Astro writes only the root 404 as `404.html`; `src/pages/es/404.astro` becomes
+ * `es/404/index.html`. Hosts that serve the nearest `404.html` for a missing path
+ * (e.g. Cloudflare) need `es/404.html` to show the Spanish page under `/es/`.
+ * @returns {import('astro').AstroIntegration} The integration.
+ */
+function localeNotFoundPages() {
+  return {
+    name: 'locale-404-pages',
+    hooks: {
+      'astro:build:done': async ({ dir }) => {
+        for (const locale of locales.filter(l => l !== defaultLocale)) {
+          await rename(new URL(`${locale}/404/index.html`, dir), new URL(`${locale}/404.html`, dir))
+          await rmdir(new URL(`${locale}/404/`, dir))
+        }
+      },
+    },
+  }
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -29,9 +50,10 @@ export default defineConfig({
           es: 'es',
         },
       },
-      // The 404 page must not be indexed.
+      // The 404 pages must not be indexed.
       filter: page => !page.includes('/404'),
     }),
+    localeNotFoundPages(),
   ],
 
   // Self-hosted at build time by the Astro Fonts API (no request to Google from the visitor).
