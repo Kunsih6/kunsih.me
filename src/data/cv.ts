@@ -115,8 +115,8 @@ const en: CV = {
         id: 'company-two',
         company: 'Company Two',
         title: 'Software Developer',
-        start: '2020-06',
-        end: '2022-12',
+        start: '2021-09',
+        end: '2022-10',
         summary: 'Placeholder one-line description of the product or company.',
         team: 'Placeholder team size and distribution.',
         highlights: [
@@ -128,9 +128,34 @@ const en: CV = {
       {
         id: 'company-three',
         company: 'Company Three',
+        title: 'Frontend Consultant',
+        start: '2021-04',
+        end: '2021-09',
+        summary: 'Placeholder one-line description of a short contract.',
+        team: 'Placeholder team size.',
+        highlights: [
+          'Placeholder achievement from a short project, with its result.',
+        ],
+        stack: ['React', 'TypeScript'],
+      },
+      {
+        id: 'company-four',
+        company: 'Company Four',
+        title: 'Freelance Developer',
+        start: '2021-01',
+        end: '2021-04',
+        team: 'Placeholder: working alone with the client\'s team.',
+        highlights: [
+          'Placeholder achievement from a short project, with its result.',
+        ],
+        stack: ['Vue.js', 'Node.js'],
+      },
+      {
+        id: 'company-five',
+        company: 'Company Five',
         title: 'Frontend Developer',
         start: '2017-11',
-        end: '2020-05',
+        end: '2021-01',
         team: 'Placeholder team size.',
         highlights: [
           'Placeholder achievement describing the problem, the action and a measurable result.',
@@ -221,8 +246,8 @@ const es: CV = {
         id: 'company-two',
         company: 'Empresa Dos',
         title: 'Software Developer',
-        start: '2020-06',
-        end: '2022-12',
+        start: '2021-09',
+        end: '2022-10',
         summary: 'Descripción de ejemplo, en una línea, del producto o la empresa.',
         team: 'Tamaño y distribución del equipo de ejemplo.',
         highlights: [
@@ -234,9 +259,34 @@ const es: CV = {
       {
         id: 'company-three',
         company: 'Empresa Tres',
+        title: 'Frontend Consultant',
+        start: '2021-04',
+        end: '2021-09',
+        summary: 'Descripción de ejemplo, en una línea, de un contrato corto.',
+        team: 'Tamaño del equipo de ejemplo.',
+        highlights: [
+          'Logro de ejemplo de un proyecto corto, con su resultado.',
+        ],
+        stack: ['React', 'TypeScript'],
+      },
+      {
+        id: 'company-four',
+        company: 'Empresa Cuatro',
+        title: 'Freelance Developer',
+        start: '2021-01',
+        end: '2021-04',
+        team: 'Ejemplo: trabajo individual con el equipo del cliente.',
+        highlights: [
+          'Logro de ejemplo de un proyecto corto, con su resultado.',
+        ],
+        stack: ['Vue.js', 'Node.js'],
+      },
+      {
+        id: 'company-five',
+        company: 'Empresa Cinco',
         title: 'Frontend Developer',
         start: '2017-11',
-        end: '2020-05',
+        end: '2021-01',
         team: 'Tamaño del equipo de ejemplo.',
         highlights: [
           'Logro de ejemplo que describe el problema, la acción y un resultado medible.',
