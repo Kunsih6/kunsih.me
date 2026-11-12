@@ -24,7 +24,7 @@ Defined in `tsconfig.json` (`compilerOptions.paths`):
 - `@/` → `src/` (components, layouts, i18n, data, styles, assets). Use it instead of `../` imports; same-folder imports may stay `./`.
 - `~/` → project root, for root-level config or data files (e.g. `~/package.json`).
 
-Never import from `public/` (`~/public/...` or `../public/...`): ESLint rejects it. Files in `public/` are served as-is, so reference them by URL (`/og/default.png`). Assets that Astro should process or optimize go in `src/assets/` and are imported with `@/assets/...`.
+Never import from `public/` (`~/public/...` or `../public/...`): ESLint rejects it. Files in `public/` are served as-is, so reference them by URL (`/favicon.svg`). Assets that Astro should process or optimize go in `src/assets/` and are imported with `@/assets/...`.
 
 ## Styles
 
@@ -44,6 +44,12 @@ Never import from `public/` (`~/public/...` or `../public/...`): ESLint rejects 
 - Animate on page load with CSS keyframes inside `@media (prefers-reduced-motion: no-preference)` (see the hero intro in `Hero.astro`).
 - For scroll reveals, add `data-reveal="up"` (or `"words"` / `"chars"` around a `SplitText`) and an optional `data-reveal-delay` in ms. `src/scripts/motion.ts` handles them, along with the other scroll- and pointer-linked effects, and does nothing under reduced motion.
 - A `clip-path` keyframe needs `inset()` at both ends: `none` cannot be interpolated, so the animation would jump.
+
+## Share images
+
+- `src/pages/og/[lang].png.ts` builds the Open Graph / Twitter card of each language at `/og/<lang>.png`, and `SEO.astro` uses it by default. `src/utils/share-card.ts` draws it like the hero in the dark theme, from `site.ts`, `cv.ts` and the i18n strings, so it follows content changes. Preview it in dev at `/og/en.png`.
+- Satori lays it out and turns text into paths; sharp makes the PNG. Satori reads only static TTF/OTF fonts, so `src/assets/og/` holds Unbounded Medium (an instance of the variable font) and Share Tech Mono, each with its SIL OFL license, which must stay next to it.
+- Its colors copy the dark tokens of `src/styles/tokens.css`; change both together.
 
 ## Deployment
 
