@@ -25,7 +25,7 @@ export default antfu(
           patterns: [
             {
               regex: '^(?:~/|(?:\\.\\./)+)public(?:/|$)',
-              message: 'Do not import from public/. Reference the file by its URL (e.g. "/og/default.png") or move it to src/assets/ and import it with "@/assets/...".',
+              message: 'Do not import from public/. Reference the file by its URL (e.g. "/favicon.svg") or move it to src/assets/ and import it with "@/assets/...".',
             },
           ],
         },
