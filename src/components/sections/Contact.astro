@@ -1,5 +1,6 @@
 ---
 import ButtonLink from '@/components/common/ButtonLink.astro'
+import SplitText from '@/components/common/SplitText.astro'
 import SectionLayout from '@/components/layouts/SectionLayout.astro'
 import { site } from '@/config/site'
 import { cv } from '@/data/cv'
@@ -13,11 +14,11 @@ const [mailUser, mailDomain] = site.email.split('@')
   <div class="block">
     <p class="t-label inv-muted">N° 005 — {contact.eyebrow}</p>
 
-    <h2 id="contact-title" class="title">
-      {contact.title}
+    <h2 id="contact-title" class="title" aria-label={contact.title} data-reveal="chars">
+      <SplitText text={contact.title} by="chars" />
     </h2>
 
-    <div class="mail-group">
+    <div class="mail-group" data-reveal="up">
       <p class="t-label inv-muted">{contact.mailLabel}</p>
       <a href={`mailto:${site.email}`} class="mail">
         <span>{mailUser}</span>
@@ -26,8 +27,10 @@ const [mailUser, mailDomain] = site.email.split('@')
     </div>
 
     <div class="bottom">
-      <p class="t-body-lg pitch">{contact.pitch}</p>
-      <div class="actions">
+      <p class="t-body-lg pitch" data-reveal="up">
+        {contact.pitch}
+      </p>
+      <div class="actions" data-reveal="up" data-reveal-delay="100">
         <ButtonLink href={`mailto:${site.email}`} inverse>
           {contact.emailCta}
         </ButtonLink>

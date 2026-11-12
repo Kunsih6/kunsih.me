@@ -32,6 +32,11 @@ const en = {
     switchToDark: 'Switch to dark mode',
     light: 'Light',
     dark: 'Dark',
+    // Label on the scanner line that sweeps the screen when the theme changes.
+    scan: {
+      light: 'Scan // light',
+      dark: 'Scan // dark',
+    },
   },
   date: {
     present: 'Present',

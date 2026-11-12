@@ -28,7 +28,7 @@ const { roles } = experience
     On large screens the tabs fill the left column and the open panel the right one.
     Without JavaScript every panel stays visible.
   -->
-  <div class="roles" style={`--roles: ${roles.length}`} data-roles>
+  <div class="roles" style={`--roles: ${roles.length}`} data-roles data-reveal="up">
     {roles.map((role, i) => (
       <>
         <button

@@ -31,6 +31,10 @@ export default {
     switchToDark: 'Cambiar a modo oscuro',
     light: 'Claro',
     dark: 'Oscuro',
+    scan: {
+      light: 'Escáner // claro',
+      dark: 'Escáner // oscuro',
+    },
   },
   date: {
     present: 'Actualidad',

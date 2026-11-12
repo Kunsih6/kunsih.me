@@ -59,7 +59,7 @@ const years = Array.from({ length: parseYearMonth(to).year - firstYear + 1 }, (_
 }))
 ---
 
-<div class="timeline">
+<div class="timeline" data-reveal="up">
   <div class="years t-code t-muted" aria-hidden="true">
     {years.map(({ year, left, minor }) => (
       <span class:list={['year', { minor }]} style={`left: ${left.toFixed(2)}%`}>

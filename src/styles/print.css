@@ -1,8 +1,24 @@
-/* Printing or saving as PDF keeps the real colors. */
+/* Printing or saving as PDF: real colors and everything in its final state. */
 
 @media print {
   body {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+  }
+
+  /* Elements that src/scripts/motion.ts hides, moves or dims before they animate. */
+  [data-reveal],
+  [data-mask] > *,
+  [data-scrub] > span,
+  [data-ghost],
+  [data-ghost-x] {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

@@ -31,7 +31,7 @@ const links = [
     </a>
 
     {!minimal && (
-      <nav aria-label={t('nav.label')} class="links">
+      <nav aria-label={t('nav.label')} class="links" data-spy>
         {links.map((link) => (
           <a href={link.href} class="link t-label">
             {link.label}
@@ -71,6 +71,8 @@ const links = [
         data-theme-toggle
         data-label-light={t('theme.switchToLight')}
         data-label-dark={t('theme.switchToDark')}
+        data-scan-light={t('theme.scan.light')}
+        data-scan-dark={t('theme.scan.dark')}
         aria-label={t('theme.switchToLight')}
       >
         <Icon name="theme" />
@@ -81,26 +83,113 @@ const links = [
       </button>
     </div>
   </div>
+
+  <!-- Reading progress, scaled by src/scripts/motion.ts. -->
+  <div class="progress" aria-hidden="true" data-progress></div>
 </header>
 
 <script>
+  type Theme = 'light' | 'dark'
+
   const root = document.documentElement
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)')
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')]
+  let sweep: ViewTransition | null = null
 
   function syncLabels(button: HTMLButtonElement) {
     const isDark = root.dataset.theme !== 'light'
     button.setAttribute('aria-label', (isDark ? button.dataset.labelLight : button.dataset.labelDark) ?? '')
   }
 
-  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
-    syncLabels(button)
-    button.addEventListener('click', () => {
-      const next = root.dataset.theme === 'light' ? 'dark' : 'light'
-      root.dataset.theme = next
-      try {
-        localStorage.setItem('theme', next)
-      } catch {}
-      syncLabels(button)
+  function setTheme(theme: Theme) {
+    root.dataset.theme = theme
+    try {
+      localStorage.setItem('theme', theme)
+    } catch {}
+    buttons.forEach(syncLabels)
+  }
+
+  /** The scanner line (global styles at the end of this file), created on the first switch. */
+  function scanLine(): HTMLElement {
+    let line = document.querySelector<HTMLElement>('.scan')
+    if (!line) {
+      line = document.createElement('div')
+      line.className = 'scan'
+      line.setAttribute('aria-hidden', 'true')
+      line.append(Object.assign(document.createElement('span'), { className: 'scan-tag' }))
+      document.body.append(line)
+    }
+    return line
+  }
+
+  function switchTheme(button: HTMLButtonElement) {
+    const next: Theme = root.dataset.theme === 'light' ? 'dark' : 'light'
+
+    // A second click during the sweep ends it and applies the theme at once.
+    if (sweep) {
+      sweep.skipTransition()
+      setTheme(next)
+      return
+    }
+    if (!('startViewTransition' in document)) {
+      setTheme(next)
+      return
+    }
+    // With reduced motion, the default short crossfade only.
+    if (reducedMotion.matches) {
+      document.startViewTransition(() => setTheme(next))
+      return
+    }
+
+    const forward = next === 'light'
+    const line = scanLine()
+    const tag = line.querySelector('.scan-tag')
+    if (tag) {
+      tag.textContent = (forward ? button.dataset.scanLight : button.dataset.scanDark) ?? ''
+    }
+    line.dataset.dir = forward ? 'forward' : 'reverse'
+    line.toggleAttribute('data-on', true)
+    root.classList.add('scanning')
+    root.classList.toggle('scan-reverse', !forward)
+
+    sweep = document.startViewTransition(() => setTheme(next))
+    sweep.finished.finally(() => {
+      sweep = null
+      root.classList.remove('scanning', 'scan-reverse')
+      line.removeAttribute('data-on')
     })
+  }
+
+  for (const button of buttons) {
+    syncLabels(button)
+    button.addEventListener('click', () => switchTheme(button))
+  }
+
+  // Marks the section being read in the nav. It is state, not motion, so it always runs.
+  const spied = [...document.querySelectorAll<HTMLAnchorElement>('[data-spy] a[href^="#"]')]
+  if (spied.length) {
+    const sections = spied.map((link) => document.getElementById(link.hash.slice(1)))
+    let frame = 0
+    const paint = () => {
+      frame = 0
+      const scrolls = document.documentElement.scrollHeight - innerHeight > 8
+      const current = sections.findLastIndex(
+        (section) => section && section.getBoundingClientRect().top <= innerHeight * 0.45,
+      )
+      spied.forEach((link, i) => {
+        if (scrolls && i === current) {
+          link.setAttribute('aria-current', 'location')
+        } else {
+          link.removeAttribute('aria-current')
+        }
+      })
+    }
+    const schedule = () => {
+      frame ||= requestAnimationFrame(paint)
+    }
+    addEventListener('scroll', schedule, { passive: true })
+    addEventListener('resize', schedule)
+    paint()
   }
 </script>
 
@@ -170,10 +259,55 @@ const links = [
   }
 
   .dot {
+    position: relative;
     width: 8px;
     height: 8px;
     border-radius: 9999px;
     background: var(--signal);
+  }
+
+  /* Available: the dot sends out a radar ping, with a pause between pings. */
+  @media (prefers-reduced-motion: no-preference) {
+    .dot::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: var(--signal);
+      opacity: 0;
+      pointer-events: none;
+      animation: status-ping 2.4s cubic-bezier(0.16, 1, 0.3, 1) 1.2s infinite both;
+    }
+  }
+
+  @keyframes status-ping {
+    0% {
+      transform: scale(1);
+      opacity: 0.7;
+    }
+
+    62%,
+    100% {
+      transform: scale(3.6);
+      opacity: 0;
+    }
+  }
+
+  .progress {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--cobalt);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  @media print {
+    .progress {
+      display: none;
+    }
   }
 
   .lang {
@@ -219,6 +353,14 @@ const links = [
     }
   }
 
+  /* The section being read, set by the scroll spy in the script above. */
+  .link[aria-current='location'] {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 8px;
+  }
+
   @media (max-width: 1180px) {
     .status-more {
       display: none;
@@ -251,6 +393,140 @@ const links = [
   @media (max-width: 380px) {
     .status {
       display: none;
+    }
+  }
+</style>
+
+<style is:global>
+  /*
+   * Theme switch: a scanner line crosses the screen and leaves the new theme behind it
+   * (View Transitions, started by the theme toggle above). It sweeps left to right into
+   * the light theme and back right to left into the dark one. Global: the script appends
+   * the line to <body>, and the transition pseudo-elements belong to <html>.
+   */
+  .scan {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 60;
+    width: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 24px 4px var(--accent);
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .scan[data-on] {
+    visibility: visible;
+    view-transition-name: scanline;
+  }
+
+  .scan-tag {
+    position: absolute;
+    top: calc(var(--nav-h) + 20px);
+    right: 12px;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 12px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .scan[data-dir='reverse'] .scan-tag {
+    right: auto;
+    left: 12px;
+  }
+
+  .scanning::view-transition-old(root),
+  .scanning::view-transition-new(root) {
+    mix-blend-mode: normal;
+  }
+
+  .scanning::view-transition-old(root) {
+    animation: none;
+  }
+
+  .scanning::view-transition-new(root) {
+    animation: scan-reveal 640ms cubic-bezier(0.65, 0, 0.35, 1) both;
+  }
+
+  .scanning.scan-reverse::view-transition-new(root) {
+    animation-name: scan-reveal-reverse;
+  }
+
+  /* The line moves with `left`, not a transform, so it stays in step with the reveal. */
+  .scanning::view-transition-group(scanline) {
+    transform: none;
+    animation: scan-move 640ms cubic-bezier(0.65, 0, 0.35, 1) both;
+  }
+
+  .scanning.scan-reverse::view-transition-group(scanline) {
+    animation-name: scan-move-reverse;
+  }
+
+  .scanning::view-transition-image-pair(scanline) {
+    animation: scan-flash 640ms linear both;
+  }
+
+  /* Both ends are `inset()`: `none` cannot be interpolated, so the reveal would jump. */
+  @keyframes scan-reveal {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+
+    to {
+      clip-path: inset(0);
+    }
+  }
+
+  @keyframes scan-reveal-reverse {
+    from {
+      clip-path: inset(0 0 0 100%);
+    }
+
+    to {
+      clip-path: inset(0);
+    }
+  }
+
+  @keyframes scan-move {
+    from {
+      left: 0;
+    }
+
+    to {
+      left: calc(100% - 2px);
+    }
+  }
+
+  @keyframes scan-move-reverse {
+    from {
+      left: calc(100% - 2px);
+    }
+
+    to {
+      left: 0;
+    }
+  }
+
+  @keyframes scan-flash {
+    0%,
+    100% {
+      opacity: 0;
+    }
+
+    10%,
+    90% {
+      opacity: 1;
+    }
+  }
+
+  @media print {
+    .scan {
+      display: none !important;
     }
   }
 </style>

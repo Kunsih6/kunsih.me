@@ -5,18 +5,42 @@ import { cv } from '@/data/cv'
 import { getLang } from '@/i18n/utils'
 
 const { profile } = cv[getLang(Astro.currentLocale)]
+
+// One span per word, so motion.ts can light the statement up word by word while it scrolls.
+const words = [
+  ...profile.statement
+    .trim()
+    .split(/\s+/)
+    .map((text) => ({ text, accent: false })),
+  ...profile.statementAccent
+    .trim()
+    .split(/\s+/)
+    .map((text) => ({ text, accent: true })),
+]
 ---
 
 <SectionLayout id="profile" divider aria-labelledby="profile-title">
   <SectionHeader index={2} eyebrow={profile.eyebrow}>
-    <h2 id="profile-title" class="t-title statement">
-      {profile.statement} <span class="t-accent">{profile.statementAccent}</span>
+    <h2
+      id="profile-title"
+      class="t-title statement"
+      aria-label={`${profile.statement} ${profile.statementAccent}`}
+      data-scrub
+    >
+      {words.map((word, i) => (
+        <>
+          {i > 0 && ' '}
+          <span class:list={{ 't-accent': word.accent }} aria-hidden="true">
+            {word.text}
+          </span>
+        </>
+      ))}
     </h2>
   </SectionHeader>
 
   <dl class="facts">
-    {profile.facts.map((fact) => (
-      <div class="fact">
+    {profile.facts.map((fact, i) => (
+      <div class="fact" data-reveal="up" data-reveal-delay={i * 80}>
         <dt class="t-label t-muted">{fact.label}</dt>
         <dd class="t-body-lg">{fact.value}</dd>
       </div>

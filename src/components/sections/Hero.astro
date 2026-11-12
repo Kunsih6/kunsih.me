@@ -9,7 +9,7 @@ import { getLang } from '@/i18n/utils'
 const { hero } = cv[getLang(Astro.currentLocale)]
 ---
 
-<SectionLayout class="hero" spacing="none" divider aria-labelledby="hero-title">
+<SectionLayout class="hero" spacing="none" divider aria-labelledby="hero-title" data-hero>
   <div class="inner">
     <div class="meta t-code t-muted">
       <span>N° 001 // KS-CV // {hero.updated}</span>
@@ -19,7 +19,12 @@ const { hero } = cv[getLang(Astro.currentLocale)]
     </div>
 
     <div class="word" role="img" aria-label={site.brand}>
-      <Wordmark outline class="ghost" />
+      <!-- Each layer moves on its own: scroll drift, pointer lean, then the intro. -->
+      <div class="ghost" data-ghost>
+        <div class="ghost-x" data-ghost-x>
+          <Wordmark outline class="ghost-letters" />
+        </div>
+      </div>
       <Wordmark class="solid" />
       <span class="corner tl" aria-hidden="true"></span>
       <span class="corner tr" aria-hidden="true"></span>
@@ -88,15 +93,24 @@ const { hero } = cv[getLang(Astro.currentLocale)]
     font-size: clamp(48px, 17vw, 280px);
   }
 
-  .word :global(.ghost),
+  .ghost,
   .word :global(.solid) {
     grid-area: 1 / 1;
+    min-width: 0;
+  }
+
+  .word :global(svg) {
     max-width: 100%;
     height: auto;
   }
 
-  .word :global(.ghost) {
-    transform: translate(var(--echo-x), var(--echo-y));
+  /* `translate` composes with the scroll drift that motion.ts sets as `transform`. */
+  .ghost {
+    translate: var(--echo-x) var(--echo-y);
+  }
+
+  .ghost-x {
+    transition: transform 160ms linear;
   }
 
   /* Painted over the transformed echo, so the filled letters hide its lines. */
@@ -172,5 +186,129 @@ const { hero } = cv[getLang(Astro.currentLocale)]
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+  }
+
+  /*
+   * Intro: the name and the actions come in first, then the poster finishes its gesture.
+   * Pure CSS on load, so nothing waits for JavaScript and nothing can stay hidden.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    .headline,
+    .intro,
+    .actions {
+      animation: hero-lift 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+
+    .headline {
+      animation-delay: 60ms;
+    }
+
+    .intro {
+      animation-delay: 130ms;
+    }
+
+    .actions {
+      animation-delay: 200ms;
+    }
+
+    /* Each letter rises out of the wordmark's own box, which clips it. */
+    .word :global(.solid path) {
+      animation: hero-rise 820ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .word :global(.solid path:nth-child(1)) {
+      animation-delay: 140ms;
+    }
+
+    .word :global(.solid path:nth-child(2)) {
+      animation-delay: 205ms;
+    }
+
+    .word :global(.solid path:nth-child(3)) {
+      animation-delay: 270ms;
+    }
+
+    .word :global(.solid path:nth-child(4)) {
+      animation-delay: 335ms;
+    }
+
+    .word :global(.solid path:nth-child(5)) {
+      animation-delay: 400ms;
+    }
+
+    .word :global(.solid path:nth-child(6)) {
+      animation-delay: 465ms;
+    }
+
+    /* The echo steps out from behind the letters. */
+    .word :global(.ghost-letters) {
+      animation: hero-echo 480ms steps(6, end) 900ms both;
+    }
+
+    .corner {
+      animation: hero-blink 240ms steps(3, end) both;
+    }
+
+    .tl {
+      animation-delay: 1000ms;
+    }
+
+    .tr {
+      animation-delay: 1070ms;
+    }
+
+    .br {
+      animation-delay: 1140ms;
+    }
+
+    .bl {
+      animation-delay: 1210ms;
+    }
+
+    /* The meta lines type in; no fill afterwards, so the clip goes away. */
+    .meta > span {
+      animation: hero-type 520ms steps(16, end) 1000ms backwards;
+    }
+
+    .meta > span + span {
+      animation-delay: 1140ms;
+    }
+  }
+
+  @keyframes hero-lift {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+  }
+
+  @keyframes hero-rise {
+    from {
+      transform: translateY(108%);
+    }
+  }
+
+  @keyframes hero-echo {
+    from {
+      opacity: 0;
+      transform: translate(calc(-1 * var(--echo-x)), calc(-1 * var(--echo-y)));
+    }
+  }
+
+  @keyframes hero-blink {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* Both ends are `inset()`: `none` cannot be interpolated, so the typing would jump. */
+  @keyframes hero-type {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+
+    to {
+      clip-path: inset(0);
+    }
   }
 </style>

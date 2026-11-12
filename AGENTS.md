@@ -29,7 +29,7 @@ Never import from `public/` (`~/public/...` or `../public/...`): ESLint rejects 
 ## Styles
 
 - Global styles live in `src/styles/`, one file per purpose (`tokens`, `base`, `typography`, `accessibility`, `motion`, `print`). `main.css` imports them all, and `BaseLayout.astro` imports `main.css` once.
-- Only styles shared by several components go there. A style that a single component uses lives in that component's `<style>`.
+- Only styles shared by several components go there. A style that a single component uses lives in that component's `<style>`. Use `<style is:global>` only for elements it creates from a script or for `<html>` pseudo-elements (see the theme scan in `Header.astro`).
 
 ## i18n
 
@@ -37,6 +37,13 @@ Never import from `public/` (`~/public/...` or `../public/...`): ESLint rejects 
 - `en.ts` defines the shape (`Messages`); other language files use `satisfies Messages`, so the type checker (editor or `tsc --noEmit`) flags a missing or extra key.
 - Read strings with `t('seo.title')` from `useTranslations(lang)`. Its dotted keys (`UIKey`) are derived from `Messages`.
 - Don't add plural variants of units (years, months, ...) to the message files. Format them with `Intl.NumberFormat` (`style: 'unit'`), which picks the plural form per locale (see `src/utils/date.ts`).
+
+## Motion
+
+- Content must be readable without motion or JavaScript: render every element in its final state and only hide it right before it animates.
+- Animate on page load with CSS keyframes inside `@media (prefers-reduced-motion: no-preference)` (see the hero intro in `Hero.astro`).
+- For scroll reveals, add `data-reveal="up"` (or `"words"` / `"chars"` around a `SplitText`) and an optional `data-reveal-delay` in ms. `src/scripts/motion.ts` handles them, along with the other scroll- and pointer-linked effects, and does nothing under reduced motion.
+- A `clip-path` keyframe needs `inset()` at both ends: `none` cannot be interpolated, so the animation would jump.
 
 ## Documentation
 

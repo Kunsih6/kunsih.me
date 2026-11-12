@@ -1,0 +1,53 @@
+---
+/*
+ * Splits a line into masked words or characters so each part can rise into view
+ * (see `data-reveal` in `src/scripts/motion.ts`). The parts are hidden from assistive
+ * technology: give the parent element the full text as its `aria-label`.
+ */
+interface Props {
+  text: string
+  /** Mask each word (default) or each character. */
+  by?: 'words' | 'chars'
+}
+
+const { text, by = 'words' } = Astro.props
+const parts = by === 'words' ? text.trim().split(/\s+/) : Array.from(text)
+---
+
+<span class:list={['split', `split--${by}`]} aria-hidden="true">
+  {parts.map((part, i) => (
+    <>
+      {by === 'words' && i > 0 && ' '}
+      <span class="mask" data-mask>
+        <span>{part}</span>
+      </span>
+    </>
+  ))}
+</span>
+
+<style>
+  /*
+   * The masks stay inline (no flex row): the template puts no whitespace between them, so
+   * characters sit flush, and selecting or copying the line still gives one word.
+   */
+  .mask {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+  }
+
+  .mask > span {
+    display: inline-block;
+  }
+
+  /* Room for descenders inside the mask, without changing the line height. */
+  .split--words .mask {
+    padding-bottom: 0.14em;
+    margin-bottom: -0.14em;
+  }
+
+  .split--chars .mask {
+    padding-block: 0.05em;
+    margin-block: -0.05em;
+  }
+</style>
