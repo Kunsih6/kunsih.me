@@ -1,0 +1,39 @@
+---
+interface Props {
+  /** Section number shown as "N° 00X". */
+  index: number
+  eyebrow: string
+  title?: string
+  titleId?: string
+  intro?: string
+}
+
+const { index, eyebrow, title, titleId, intro } = Astro.props
+const number = String(index).padStart(3, '0')
+---
+
+<div class="section-header">
+  <p class="t-label t-muted">
+    N° {number} — {eyebrow}
+  </p>
+  {title && (
+    <h2 id={titleId} class="t-title title">
+      {title}
+    </h2>
+  )}
+  <slot />
+  {intro && <p class="t-body-lg t-muted">{intro}</p>}
+</div>
+
+<style>
+  .section-header {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: clamp(40px, 5vw, 72px);
+  }
+
+  .title {
+    max-width: 26em;
+  }
+</style>

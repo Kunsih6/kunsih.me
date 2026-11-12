@@ -1,0 +1,48 @@
+---
+import SectionHeader from '@/components/common/SectionHeader.astro'
+import { cv } from '@/data/cv'
+import { getLang } from '@/i18n/utils'
+
+const { profile } = cv[getLang(Astro.currentLocale)]
+---
+
+<section id="profile" class="section profile" aria-labelledby="profile-title">
+  <SectionHeader index={2} eyebrow={profile.eyebrow}>
+    <h2 id="profile-title" class="t-title statement">
+      {profile.statement} <span class="t-accent">{profile.statementAccent}</span>
+    </h2>
+  </SectionHeader>
+
+  <dl class="facts">
+    {profile.facts.map((fact) => (
+      <div class="fact">
+        <dt class="t-label t-muted">{fact.label}</dt>
+        <dd class="t-body-lg">{fact.value}</dd>
+      </div>
+    ))}
+  </dl>
+</section>
+
+<style>
+  .profile {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .statement {
+    max-width: 28em;
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+    gap: 28px 0;
+  }
+
+  .fact {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 24px 0 0;
+    border-top: 1px solid var(--line);
+  }
+</style>

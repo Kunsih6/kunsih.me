@@ -1,0 +1,20 @@
+---
+import Contact from '@/components/sections/Contact.astro'
+import Experience from '@/components/sections/Experience.astro'
+import Hero from '@/components/sections/Hero.astro'
+import Profile from '@/components/sections/Profile.astro'
+import Stack from '@/components/sections/Stack.astro'
+import { getLang, useTranslations } from '@/i18n/utils'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+
+// Shared by every locale; the language comes from the route (`/` or `/es/`).
+const t = useTranslations(getLang(Astro.currentLocale))
+---
+
+<BaseLayout title={t('seo.title')} description={t('seo.description')} profile>
+  <Hero />
+  <Profile />
+  <Experience />
+  <Stack />
+  <Contact />
+</BaseLayout>

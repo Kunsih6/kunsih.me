@@ -1,0 +1,190 @@
+---
+import Icon from '@/components/common/Icon.astro'
+import SectionHeader from '@/components/common/SectionHeader.astro'
+import { cv } from '@/data/cv'
+import { getLang } from '@/i18n/utils'
+import { formatDuration, formatRange } from '@/utils/date'
+
+const lang = getLang(Astro.currentLocale)
+const { experience } = cv[lang]
+---
+
+<section id="experience" class="section" aria-labelledby="experience-title">
+  <SectionHeader
+    index={3}
+    eyebrow={experience.eyebrow}
+    title={experience.title}
+    titleId="experience-title"
+    intro={experience.intro}
+  />
+
+  <!-- Native exclusive accordion (`name`): works without JavaScript and keeps every role in the HTML. -->
+  <div class="roles">
+    {experience.roles.map((role, i) => (
+      <details class="role" name="experience" open={i === 0}>
+        <summary class="role-summary">
+          <span class="role-heading">
+            <span class="t-heading">{role.company}</span>
+            <span class="role-title t-muted">{role.title}</span>
+          </span>
+          <span class="role-period t-code t-muted">
+            <time datetime={role.start}>{formatRange(role.start, role.end, lang)}</time>
+            <span class="role-duration"> · {formatDuration(role.start, role.end, lang)}</span>
+          </span>
+          <Icon name="chevron-down" size={20} class="chevron" />
+        </summary>
+
+        <article class="role-body" aria-label={`${role.company} — ${role.title}`}>
+          {role.summary && <p class="t-body-lg">{role.summary}</p>}
+          <p class="t-code t-muted">
+            {experience.teamLabel} — {role.team}
+          </p>
+          <ul class="highlights" role="list">
+            {role.highlights.map((item) => (
+              <li>
+                <span class="bullet" aria-hidden="true"></span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <ul class="stack t-code" role="list" aria-label="Stack">
+            <li class="stack-label" aria-hidden="true">
+              Stack —
+            </li>
+            {role.stack.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </article>
+      </details>
+    ))}
+  </div>
+</section>
+
+<style>
+  .roles {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .role {
+    border: 1px solid var(--line);
+    transition: border-color 140ms linear;
+  }
+
+  .role[open] {
+    border-color: var(--accent);
+  }
+
+  .role-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 24px;
+    padding: 20px;
+    list-style: none;
+    cursor: pointer;
+    transition: background-color 140ms linear;
+  }
+
+  .role-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .role[open] > .role-summary {
+    background: var(--frost);
+  }
+
+  @media (hover: hover) {
+    .role:not([open]) > .role-summary:hover {
+      background: var(--surface);
+    }
+  }
+
+  .role-summary:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--accent);
+  }
+
+  .role-heading {
+    flex: 1 1 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .role-title {
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .role-period {
+    text-transform: uppercase;
+  }
+
+  .role[open] .role-period {
+    color: var(--accent);
+  }
+
+  .role-summary :global(.chevron) {
+    transition: transform 140ms linear;
+  }
+
+  .role[open] .role-summary :global(.chevron) {
+    transform: rotate(180deg);
+  }
+
+  .role-body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 24px 20px;
+  }
+
+  .role-body > p {
+    max-width: 58ch;
+  }
+
+  .highlights {
+    display: flex;
+    flex-direction: column;
+    color: var(--ink-muted);
+  }
+
+  .highlights li {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    max-width: 72ch;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .bullet {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border: 1.5px solid var(--accent);
+  }
+
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 14px;
+    margin-top: -24px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    color: var(--ink-muted);
+  }
+
+  .stack-label {
+    color: var(--ink);
+  }
+
+  @media (max-width: 600px) {
+    .role-duration {
+      display: none;
+    }
+  }
+</style>

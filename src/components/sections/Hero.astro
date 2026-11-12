@@ -1,0 +1,177 @@
+---
+import ButtonLink from '@/components/common/ButtonLink.astro'
+import { site } from '@/config/site'
+import { cv } from '@/data/cv'
+import { getLang } from '@/i18n/utils'
+
+const { hero } = cv[getLang(Astro.currentLocale)]
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="inner gutter">
+    <div class="meta t-code t-muted">
+      <span>N° 001 // KS-CV // {hero.updated}</span>
+      <span>
+        {site.location.coordinates} // {site.location.city}, {site.location.countryCode}
+      </span>
+    </div>
+
+    <div class="word" role="img" aria-label={site.brand}>
+      <span class="ghost" aria-hidden="true">
+        {site.brand}
+      </span>
+      <span class="solid" aria-hidden="true">
+        {site.brand}
+      </span>
+      <span class="corner tl" aria-hidden="true"></span>
+      <span class="corner tr" aria-hidden="true"></span>
+      <span class="corner br" aria-hidden="true"></span>
+      <span class="corner bl" aria-hidden="true"></span>
+    </div>
+
+    <div class="bottom">
+      <div class="copy">
+        <h1 id="hero-title" class="headline">
+          {hero.headline}
+        </h1>
+        <p class="t-body-lg t-muted intro">{hero.intro}</p>
+      </div>
+      <div class="actions">
+        <ButtonLink href="#contact">{hero.primaryCta}</ButtonLink>
+        <ButtonLink href={site.social.linkedin} variant="ghost" external>
+          {hero.secondaryCta}
+        </ButtonLink>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - var(--nav-h));
+    min-height: calc(100dvh - var(--nav-h));
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+  }
+
+  .inner {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: clamp(24px, 4vh, 48px);
+    padding-block: clamp(24px, 4vh, 48px) clamp(32px, 6vh, 72px);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 24px;
+    text-transform: uppercase;
+  }
+
+  /* Poster word with an outlined echo below it and HUD corner brackets. */
+  .word {
+    position: relative;
+    display: grid;
+    width: fit-content;
+    max-width: 100%;
+    padding-bottom: 0.4em;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(48px, 17vw, 280px);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .ghost,
+  .solid {
+    grid-area: 1 / 1;
+  }
+
+  .ghost {
+    transform: translateY(0.4em);
+    color: transparent;
+    -webkit-text-stroke: 1px var(--ink);
+  }
+
+  .solid {
+    position: relative;
+    color: var(--ink);
+  }
+
+  .corner {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 0 solid var(--line-strong);
+  }
+
+  .tl {
+    top: -12px;
+    left: -12px;
+    border-top-width: 2px;
+    border-left-width: 2px;
+  }
+
+  .tr {
+    top: -12px;
+    right: -12px;
+    border-top-width: 2px;
+    border-right-width: 2px;
+  }
+
+  .br {
+    bottom: -12px;
+    right: -12px;
+    border-bottom-width: 2px;
+    border-right-width: 2px;
+  }
+
+  .bl {
+    bottom: -12px;
+    left: -12px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+  }
+
+  .bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 28px 48px;
+  }
+
+  .copy {
+    flex: 1 1 420px;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .headline {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(21px, 2.2vw, 32px);
+    line-height: 1.18;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .intro {
+    max-width: 54ch;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+</style>

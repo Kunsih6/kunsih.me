@@ -1,0 +1,128 @@
+---
+import ButtonLink from '@/components/common/ButtonLink.astro'
+import { site } from '@/config/site'
+import { cv } from '@/data/cv'
+import { getLang } from '@/i18n/utils'
+
+const { contact } = cv[getLang(Astro.currentLocale)]
+const [mailUser, mailDomain] = site.email.split('@')
+---
+
+<section id="contact" class="contact gutter" aria-labelledby="contact-title">
+  <div class="block cut-lg">
+    <p class="t-label inv-muted">N° 005 — {contact.eyebrow}</p>
+
+    <h2 id="contact-title" class="title">
+      {contact.title}
+    </h2>
+
+    <div class="mail-group">
+      <p class="t-label inv-muted">{contact.mailLabel}</p>
+      <a href={`mailto:${site.email}`} class="mail">
+        <span>{mailUser}</span>
+        <span>@{mailDomain}</span>
+      </a>
+    </div>
+
+    <div class="bottom">
+      <p class="t-body-lg pitch">{contact.pitch}</p>
+      <div class="actions">
+        <ButtonLink href={`mailto:${site.email}`} inverse>
+          {contact.emailCta}
+        </ButtonLink>
+        <ButtonLink href={site.social.linkedin} variant="ghost" inverse external>
+          {contact.linkedinCta}
+        </ButtonLink>
+        <ButtonLink href={site.social.github} variant="ghost" inverse external>
+          GitHub
+        </ButtonLink>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .block {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: clamp(36px, 5vw, 72px);
+    min-height: clamp(560px, 58vw, 840px);
+    padding: clamp(36px, 6.5vw, 104px) clamp(28px, 5vw, 72px);
+    background: var(--inverse);
+    color: var(--ink-inverse);
+  }
+
+  .inv-muted {
+    color: var(--inv-muted);
+  }
+
+  .title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(30px, 9.5vw, 150px);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+  }
+
+  .mail-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .mail {
+    display: inline-flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: min(32px, 8.4vw);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--inv-accent);
+    text-decoration: none;
+  }
+
+  .mail:hover,
+  .mail:focus-visible {
+    text-decoration: underline;
+    text-decoration-thickness: 0.06em;
+    text-underline-offset: 0.16em;
+  }
+
+  .mail:focus-visible {
+    box-shadow:
+      0 0 0 2px var(--inverse),
+      0 0 0 4px var(--inv-accent);
+  }
+
+  .bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 28px 48px;
+  }
+
+  .pitch {
+    flex: 1 1 380px;
+    max-width: 580px;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* Focus ring on the inverse block (the primary button draws its own). */
+  .contact :global(a:not(.btn--primary):focus-visible) {
+    box-shadow:
+      0 0 0 2px var(--inverse),
+      0 0 0 4px var(--inv-accent);
+  }
+</style>

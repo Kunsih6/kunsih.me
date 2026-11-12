@@ -1,0 +1,93 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+import { getLang, useTranslations } from '@/i18n/utils'
+import Icon from './Icon.astro'
+
+interface Props extends Omit<HTMLAttributes<'a'>, 'href'> {
+  href: string
+  variant?: 'primary' | 'ghost'
+  /** Opens in a new tab and announces it to screen readers. */
+  external?: boolean
+  /** Use the inverse palette (for the contact block). */
+  inverse?: boolean
+}
+
+const { href, variant = 'primary', external = false, inverse = false, class: className, ...rest } = Astro.props
+const t = useTranslations(getLang(Astro.currentLocale))
+---
+
+<a
+  href={href}
+  class:list={[
+    'btn',
+    `btn--${variant}`,
+    { 'btn--inverse': inverse, 'cut-sm': variant === 'primary' },
+    't-label',
+    className,
+  ]}
+  {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+  {...rest}
+>
+  <slot />
+  {external && <span class="sr-only"> {t('a11y.newTab')}</span>}
+  <Icon name={external ? 'arrow-up-right' : 'arrow-right'} />
+</a>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 22px;
+    border: 1px solid transparent;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background-color 140ms linear,
+      color 140ms linear,
+      border-color 140ms linear;
+  }
+
+  .btn--primary {
+    background: var(--cobalt);
+    color: var(--on-cobalt);
+  }
+
+  .btn--ghost {
+    border-color: var(--line-strong);
+    color: var(--ink);
+  }
+
+  .btn--ghost.btn--inverse {
+    border-color: var(--inv-line-strong);
+    color: var(--ink-inverse);
+  }
+
+  @media (hover: hover) {
+    .btn--primary:hover {
+      background: var(--inverse);
+      color: var(--ink-inverse);
+    }
+
+    .btn--primary.btn--inverse:hover {
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    .btn--ghost:hover {
+      border-color: var(--ink);
+    }
+
+    .btn--ghost.btn--inverse:hover {
+      border-color: var(--ink-inverse);
+    }
+  }
+
+  /* The clipped corner would cut the focus ring, so draw it inside. */
+  .btn--primary:focus-visible {
+    box-shadow: none;
+    outline: 2px solid var(--on-cobalt);
+    outline-offset: -5px;
+  }
+</style>
