@@ -70,14 +70,18 @@ const { hero } = cv[getLang(Astro.currentLocale)]
     text-transform: uppercase;
   }
 
-  /* Poster word with an outlined echo below it and HUD corner brackets. */
+  /* Poster word with an outlined echo as its shadow and HUD corner brackets. */
   .word {
+    /* Shadow offset of the outlined echo: a little lower and to the right. */
+    --echo-x: 0.04375em;
+    --echo-y: 0.15em;
+
     position: relative;
     display: grid;
     width: fit-content;
     max-width: 100%;
-    /* Room between the letters and the corner brackets; the echo hangs 0.4em lower. */
-    padding: 0.07em 0.07em 0.47em;
+    /* Room between the letters (and their echo) and the corner brackets. */
+    padding: 0.07em calc(0.07em + var(--echo-x)) calc(0.07em + var(--echo-y)) 0.07em;
     color: var(--ink);
     /* Sizes the wordmark, which is set in em. */
     font-size: clamp(48px, 17vw, 280px);
@@ -91,7 +95,7 @@ const { hero } = cv[getLang(Astro.currentLocale)]
   }
 
   .word :global(.ghost) {
-    transform: translateY(0.4em);
+    transform: translate(var(--echo-x), var(--echo-y));
   }
 
   /* Painted over the transformed echo, so the filled letters hide its lines. */
