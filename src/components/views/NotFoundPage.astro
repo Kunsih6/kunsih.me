@@ -1,0 +1,48 @@
+---
+import ButtonLink from '@/components/common/ButtonLink.astro'
+import { getLang, localizedPath, useTranslations } from '@/i18n/utils'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+
+// One 404 per locale (`/404.html`, `/es/404.html`); the language comes from the route.
+const lang = getLang(Astro.currentLocale)
+const t = useTranslations(lang)
+---
+
+<BaseLayout title={`404 — ${t('notFound.title')}`} description={t('notFound.description')} noindex minimal>
+  <section class="not-found section">
+    <p class="t-label t-muted">ERR // 404</p>
+    <h1 class="code">404</h1>
+    <div class="message">
+      <h2 class="t-title">{t('notFound.title')}</h2>
+      <p class="t-body-lg t-muted">{t('notFound.description')}</p>
+      <ButtonLink href={localizedPath(lang)}>{t('notFound.cta')}</ButtonLink>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    min-height: calc(100dvh - var(--nav-h) - 100px);
+  }
+
+  .code {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(96px, 20vw, 280px);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+  }
+
+  .message {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    max-width: 640px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+</style>
