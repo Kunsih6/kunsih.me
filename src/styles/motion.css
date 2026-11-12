@@ -1,4 +1,7 @@
-/* Motion preferences: smooth scrolling, and near-instant motion when it is reduced. */
+/*
+ * Motion preferences, and the cursor dot that src/scripts/cursor-trail.ts creates
+ * (a script, not a component, so its styles live here).
+ */
 
 @media (prefers-reduced-motion: no-preference) {
   html {
@@ -13,5 +16,26 @@
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+}
+
+.cursor-trail {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* While the dot is shown it is the cursor, so the system one is hidden everywhere. */
+:root[data-cursor],
+:root[data-cursor] * {
+  cursor: none !important;
+}
+
+@media print {
+  .cursor-trail {
+    display: none !important;
   }
 }
