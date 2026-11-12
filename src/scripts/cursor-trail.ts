@@ -1,11 +1,6 @@
-/**
- * A dot that replaces the mouse cursor, with a short fading trail, drawn on a fixed canvas.
- * Over selectable text it narrows into a caret. Over links and buttons it grows 25%,
- * turns solid and pulses.
- *
+/*
  * While the dot is shown, `data-cursor` on <html> hides the system cursor (src/styles/motion.css).
- * It is removed whenever the dot is (pointer out of the window, blur, hidden tab), so
- * there is always one cursor. The canvas never takes pointer events.
+ * It is removed whenever the dot is, so there is always one cursor.
  */
 
 /** What is under the pointer: plain page, selectable text or a control. */
@@ -17,7 +12,6 @@ type Point = [x: number, y: number]
 const LIFE = 320
 /** Dot radius, px. */
 const DOT = 7.2
-/** How much the dot grows over a control. */
 const CONTROL_SCALE = 1.25
 /** Caret width over text, px. */
 const CARET = 3
@@ -25,7 +19,6 @@ const CARET = 3
 const PULSE = 1600
 const CONTROLS = 'a[href], button, summary, label, input, select, textarea, [role="button"], [tabindex]:not([tabindex="-1"])'
 
-/** The text position under a point, from whichever API the browser has. */
 function caretRange(x: number, y: number): Range | null {
   try {
     if ('caretPositionFromPoint' in document) {
@@ -60,14 +53,12 @@ export function startCursorTrail(): void {
   let color = ''
   /** Pointer position, where the dot is drawn: as the only cursor, it never lags behind. */
   let target: Point | null = null
-  /** Recent dot positions with their time, for the trail. */
   const trail: [x: number, y: number, time: number][] = []
   /** Area painted in the previous frame: only that is cleared. */
   let dirty: [left: number, top: number, right: number, bottom: number] | null = null
   let raf = 0
   let last = 0
   let shape: Shape = 'dot'
-  /** The shape under the pointer needs checking again. */
   let probe = false
   let caretHeight = 20
   let width = DOT * 2
@@ -86,7 +77,6 @@ export function startCursorTrail(): void {
     if (el.closest(CONTROLS)) {
       return 'pulse'
     }
-    // Selectable text: a letter right under the pointer.
     const range = caretRange(x, y)
     const node = range?.startContainer
     if (!range || !(node instanceof Text) || !node.parentElement) {
@@ -153,7 +143,6 @@ export function startCursorTrail(): void {
       }
     }
 
-    // The shape morphs between dot, caret and the larger control dot in ~150ms.
     const dotSize = shape === 'pulse'
       ? DOT * 2 * CONTROL_SCALE
       : DOT * 2
@@ -186,7 +175,6 @@ export function startCursorTrail(): void {
     ctx.fillStyle = color
     ctx.lineCap = 'butt'
 
-    // Trail: each segment is thinner and fainter the older it is.
     for (let i = 1; i < trail.length; i++) {
       const [ax, ay] = trail[i - 1]
       const [bx, by, time] = trail[i]
@@ -215,7 +203,6 @@ export function startCursorTrail(): void {
       ctx.stroke()
     }
 
-    // Over a control: a disc grows from the dot and fades, once per pulse.
     if (shape === 'pulse') {
       const phase = ((now - hoverStart) % PULSE) / (PULSE * 0.7)
       if (phase < 1) {
@@ -227,7 +214,6 @@ export function startCursorTrail(): void {
       }
     }
 
-    // Solid over a control.
     ctx.globalAlpha = shape === 'pulse'
       ? 1
       : 0.9
@@ -245,7 +231,6 @@ export function startCursorTrail(): void {
       Math.ceil(bottom + margin),
     ]
 
-    // Keep drawing while something changes; with the pointer still away from a control, stop.
     if (trail.length || morphing || shape === 'pulse') {
       raf = requestAnimationFrame(frame)
     }
@@ -278,20 +263,17 @@ export function startCursorTrail(): void {
     probe = true
     kick()
   }, { passive: true })
-  // Scrolling changes what is under a still pointer.
   addEventListener('scroll', () => {
     if (target) {
       probe = true
       kick()
     }
   }, { passive: true })
-  // The canvas buffer must match its size on screen, or everything drawn is scaled and shifted.
-  // Watch the canvas itself rather than the window: Safari's page zoom changes it with no resize event.
+  // Watch the canvas, not the window: Safari's page zoom resizes it without a resize event.
   new ResizeObserver(() => {
     resize()
     kick()
   }).observe(canvas)
-  // Moving the window to a screen with another pixel density changes only devicePixelRatio.
   const watchDensity = () => {
     matchMedia(`(resolution: ${devicePixelRatio}dppx)`).addEventListener('change', () => {
       resize()
@@ -302,8 +284,7 @@ export function startCursorTrail(): void {
   watchDensity()
 
   document.documentElement.addEventListener('pointerleave', hide)
-  // A mouseout with no element to go to also means the pointer left the page. It covers exits
-  // that may send no pointerleave to <html>, like moving onto Safari's toolbar over the page.
+  // No element to go to: the pointer left the page, also onto Safari's toolbar (no pointerleave).
   document.addEventListener('mouseout', (event) => {
     if (!event.relatedTarget) {
       hide()
@@ -316,7 +297,6 @@ export function startCursorTrail(): void {
     }
   })
 
-  // A theme switch repaints the dot in the new accent right away.
   new MutationObserver(() => {
     readColor()
     if (target) {

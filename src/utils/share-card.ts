@@ -9,15 +9,9 @@ import { site } from '@/config/site'
 import { cv } from '@/data/cv'
 import { useTranslations } from '@/i18n/utils'
 
-/*
- * The image shown when a page is shared (Open Graph / Twitter card), drawn like the hero
- * in the dark theme. Satori lays it out and turns the text into paths, sharp makes the PNG.
- * Satori reads only static TTF/OTF fonts, hence the copies in src/assets/og/ (SIL OFL).
- */
-
 const SHARE_CARD = site.ogImage
 
-// Dark theme colors from src/styles/tokens.css.
+// Keep in sync with the dark theme in src/styles/tokens.css.
 const color = {
   bg: '#0b0c0e',
   ink: '#eceef1',
@@ -26,13 +20,12 @@ const color = {
   signal: '#ff8a3d',
 }
 
-// The wordmark spans 4.6852em; its outlined echo sits 0.04375em right and 0.15em down, as in the hero.
+// Same echo offsets as the hero (Hero.astro).
 const WORD_WIDTH = 900
 const [, , viewWidth, viewHeight] = wordmark.match(/viewBox="([^"]+)"/)![1].split(/\s+/).map(Number)
 const em = WORD_WIDTH / (viewWidth / 1000)
 const wordHeight = Math.round(WORD_WIDTH * viewHeight / viewWidth)
 
-/** The wordmark as an image, filled or outlined (1.5px on the card). */
 function wordmarkImage(outline: boolean): string {
   const paint = outline
     ? `fill="none" stroke="${color.lineStrong}" stroke-width="${(1.5 * viewWidth / WORD_WIDTH).toFixed(2)}"`
@@ -82,7 +75,7 @@ function card(lang: Lang): Node {
       boxSizing: 'border-box',
       width: SHARE_CARD.width,
       height: SHARE_CARD.height,
-      // The deeper bottom keeps the headline clear of the domain label X lays over that corner.
+      // Deeper at the bottom: X lays the domain over that corner.
       padding: '48px 72px 104px',
       background: color.bg,
       color: color.ink,
@@ -116,7 +109,7 @@ function card(lang: Lang): Node {
           style: { position: 'absolute', left: pad + echoX, top: pad + echoY },
         },
       },
-      // Positioned too, so it paints over the echo and hides its lines, as `.solid` does in the hero.
+      // Positioned, so it paints over the echo.
       {
         type: 'img',
         props: {
@@ -166,7 +159,6 @@ function card(lang: Lang): Node {
 
 const fontData = (dataUrl: string) => Buffer.from(dataUrl.slice(dataUrl.indexOf(',') + 1), 'base64')
 
-/** The share card for one language, as a PNG. */
 export async function renderShareCard(lang: Lang): Promise<Uint8Array<ArrayBuffer>> {
   const svg = await satori(card(lang), {
     ...SHARE_CARD,

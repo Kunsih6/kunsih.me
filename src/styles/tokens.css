@@ -1,14 +1,11 @@
 /*
- * KUNSIH design tokens.
- * Dark is the default theme; `[data-theme='light']` on <html> switches it.
- * Font families (--font-display, --font-sans, --font-mono) come from the
- * Astro Fonts API (<Font /> in the layout head).
+ * Dark is the default theme; `[data-theme='light']` on <html> switches it. The font families
+ * (--font-display, --font-sans, --font-mono) come from <Font /> in the layout head.
  */
 
 :root {
   color-scheme: dark;
 
-  /* Color */
   --bg: #0b0c0e;
   --surface: #15171b;
   --inverse: #ebe9e4;
@@ -28,17 +25,14 @@
   --inv-line-strong: #75726b;
   --inv-accent: #0059a0;
 
-  /* Layout */
   --gutter: clamp(24px, 4.5vw, 64px);
   --section-y: clamp(72px, 9vw, 136px);
   --nav-h: 57px;
 
-  /* Shape */
   --cut-sm: 8px;
   --cut-lg: 32px;
   --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
 
-  /* Motion: a strong ease-out for UI responses (press, enter). */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 

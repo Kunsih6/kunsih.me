@@ -3,7 +3,6 @@ import type { Lang } from '@/i18n/ui'
 import { locales } from '@/i18n/ui'
 import { renderShareCard } from '@/utils/share-card'
 
-/** `/og/en.png`, `/og/es.png`: the image shown when a page in that language is shared. */
 export const getStaticPaths = (() => locales.map(lang => ({
   params: { lang },
 }))) satisfies GetStaticPaths

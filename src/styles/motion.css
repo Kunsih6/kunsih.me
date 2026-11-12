@@ -1,7 +1,4 @@
-/*
- * Motion preferences, and the cursor dot that src/scripts/cursor-trail.ts creates
- * (a script, not a component, so its styles live here).
- */
+/* The cursor dot's styles live here: src/scripts/cursor-trail.ts is a script, not a component. */
 
 @media (prefers-reduced-motion: no-preference) {
   html {
@@ -28,7 +25,6 @@
   pointer-events: none;
 }
 
-/* While the dot is shown it is the cursor, so the system one is hidden everywhere. */
 :root[data-cursor],
 :root[data-cursor] * {
   cursor: none !important;

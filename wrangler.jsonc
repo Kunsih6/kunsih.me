@@ -1,15 +1,10 @@
-// Cloudflare Workers config: https://developers.cloudflare.com/workers/wrangler/configuration/
-// The site is fully static, so there is no Worker script: Cloudflare serves the Astro build output.
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "kunsih-me",
   "compatibility_date": "2026-11-10",
-  // Wrangler sends usage data to Cloudflare by default, from CI builds too.
   "send_metrics": false,
   "assets": {
     "directory": "./dist",
-    // A missing path gets the nearest `404.html` up its folders: `/es/...` shows the Spanish
-    // `es/404.html` (see `localeNotFoundPages` in astro.config.mjs), anything else `404.html`.
     "not_found_handling": "404-page"
   }
 }

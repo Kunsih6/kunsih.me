@@ -7,11 +7,6 @@ import ThemeToggle from '@/components/layouts/header/ThemeToggle.astro'
 import { site } from '@/config/site'
 import { getLang, localizedPath, useTranslations } from '@/i18n/utils'
 
-/*
- * The sticky bar. It lays out the brand and the pieces in ./header/, each of which brings its
- * own markup, script and styles, and moves the section links to a row of their own on narrow
- * screens.
- */
 interface Props {
   minimal?: boolean
 }

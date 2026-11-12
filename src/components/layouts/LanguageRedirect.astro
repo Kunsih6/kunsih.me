@@ -2,12 +2,7 @@
 import { locales } from '@/i18n/ui'
 import { localizedPath } from '@/i18n/utils'
 
-/*
- * Rendered by BaseLayout on the default home page only. A visitor who picked another language
- * in the header (saved by the language switch) goes straight to that language's home page, keeping the
- * query and hash. Nothing redirects by browser language, and crawlers keep no storage, so they
- * always get the page at its URL.
- */
+/* Never redirect by browser language: crawlers and new visitors get the page at its URL. */
 const homes = Object.fromEntries(locales.map((l) => [l, localizedPath(l)]))
 ---
 

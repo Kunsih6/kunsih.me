@@ -2,10 +2,6 @@
 import type { HTMLAttributes } from 'astro/types'
 import { getLang, useTranslations } from '@/i18n/utils'
 
-/*
- * Availability, with a dot that sends out a radar ping. It drops the work mode, then hides,
- * as the screen narrows. The header passes `class` to place it in the bar.
- */
 type Props = HTMLAttributes<'p'>
 
 const { class: className, ...rest } = Astro.props
@@ -35,7 +31,6 @@ const t = useTranslations(getLang(Astro.currentLocale))
     background: var(--signal);
   }
 
-  /* Available: the dot sends out a radar ping, with a pause between pings. */
   @media (prefers-reduced-motion: no-preference) {
     .dot::after {
       content: '';

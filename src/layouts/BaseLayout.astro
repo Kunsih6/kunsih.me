@@ -26,13 +26,10 @@ const isDefaultHome = lang === defaultLang && Astro.url.pathname === localizedPa
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- First, so a returning visitor who picked another language leaves before anything loads. -->
+    <!-- First, so the redirect runs before anything loads. -->
     {isDefaultHome && <LanguageRedirect />}
 
-    <!--
-      Apply the saved or system theme before first paint to avoid a flash, and flag
-      that scripts run (`data-js`) so interactive components can style their initial state.
-    -->
+    <!-- Before first paint: apply the saved or system theme, and flag that scripts run (data-js). -->
     <script is:inline>
       ;(() => {
         document.documentElement.dataset.js = ''

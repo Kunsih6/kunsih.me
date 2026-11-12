@@ -1,7 +1,4 @@
-/**
- * Locales and interface strings. Keep `locales` in sync with `astro.config.mjs`.
- * The strings of each language live in `./langs/<lang>.ts`.
- */
+// Keep `languages` in sync with `locales` in astro.config.mjs.
 import type { Messages } from './langs/en'
 import en from './langs/en'
 import es from './langs/es'
@@ -19,7 +16,6 @@ export const defaultLang: Lang = 'en'
 
 export const locales = Object.keys(languages) as Lang[]
 
-/** Values for `og:locale` (Open Graph uses `ll_CC`). */
 export const ogLocales: Record<Lang, string> = {
   en: 'en_US',
   es: 'es_LA',
@@ -34,5 +30,4 @@ type LeafPath<T> = {
     : `${K}.${LeafPath<T[K]>}`
 }[keyof T & string]
 
-/** A message key for `t()`, e.g. `'seo.title'`. */
 export type UIKey = LeafPath<Messages>

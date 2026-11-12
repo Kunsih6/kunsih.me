@@ -1,12 +1,7 @@
 ---
-/*
- * Splits a line into masked words or characters so each part can rise into view
- * (see `data-reveal` in `src/scripts/motion.ts`). The parts are hidden from assistive
- * technology: give the parent element the full text as its `aria-label`.
- */
+/* The parts are aria-hidden: give the parent element the full text as its `aria-label`. */
 interface Props {
   text: string
-  /** Mask each word (default) or each character. */
   by?: 'words' | 'chars'
 }
 

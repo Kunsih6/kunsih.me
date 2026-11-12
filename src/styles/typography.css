@@ -1,5 +1,3 @@
-/* Text styles shared by several components. */
-
 .t-label {
   font-family: var(--font-mono);
   font-size: 12px;

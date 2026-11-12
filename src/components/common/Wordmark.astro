@@ -1,24 +1,18 @@
 ---
 /*
- * The KUNSIH wordmark (`src/assets/brand/kunsih.svg`): Unbounded ExtraBold (wght 800,
- * SIL OFL 1.1) tracked -0.02em, with the overlapping strokes of each letter merged into
- * one closed path. An outlined letter therefore shows only its silhouette, never a line
- * crossing the same letter.
- *
- * It is decorative (`aria-hidden`): give the surrounding link or element the accessible name.
+ * Each letter's overlapping strokes are merged into one path, so an outline shows only its
+ * silhouette. Decorative: give the surrounding element the accessible name.
  */
 import Letters from '@/assets/brand/kunsih.svg'
 
 interface Props {
-  /** Draws a 1px outline of each letter instead of filling it. */
   outline?: boolean
   class?: string
 }
 
 const { outline = false, class: className } = Astro.props
 
-// The viewBox is in font units (1000 per em), so the wordmark scales with the font size
-// like the text it replaces: its capitals are 0.75em tall.
+// The viewBox is in font units (1000 per em), so the wordmark is sized in em like text.
 const width = `${Letters.width / 1000}em`
 ---
 

@@ -1,4 +1,3 @@
-/** Site identity shared by every locale. */
 export const site = {
   brand: 'KUNSIH',
   author: 'Estuardo Aguirre',
@@ -12,8 +11,6 @@ export const site = {
     linkedin: 'https://www.linkedin.com/in/kunsih6',
     github: 'https://github.com/Kunsih6',
   },
-  // Size of the share cards (Open Graph / Twitter) built per language at `/og/<lang>.png`
-  // by src/pages/og/[lang].png.ts.
   ogImage: {
     width: 1200,
     height: 630,

@@ -5,7 +5,6 @@ const GLOB_ASTRO_ALL = ['**/*.astro', '**/*.astro/*.ts', '**/*.astro/*.js']
 export default antfu(
   {
     astro: true,
-    // Explicit: without it, a missing `typescript` package makes antfu ignore every .ts file.
     typescript: true,
     formatters: {
       astro: true,
@@ -16,9 +15,6 @@ export default antfu(
   },
   {
     rules: {
-      // Files in `public/` are served as-is: reference them by URL (`/og/default.png`).
-      // Importing them duplicates the file under `/_astro/`. Assets that need
-      // processing belong in `src/assets/` (`@/assets/...`).
       'no-restricted-imports': [
         'error',
         {
@@ -33,8 +29,7 @@ export default antfu(
     },
   },
   {
-    // Prettier formats whole .astro files (frontmatter, template and <script>).
-    // These stylistic rules disagree with it there and cause circular fixes.
+    // These stylistic rules fight Prettier, which formats whole .astro files.
     files: GLOB_ASTRO_ALL,
     rules: {
       'antfu/reasonable-newline': 'off',
@@ -45,7 +40,5 @@ export default antfu(
     },
   },
 )
-  // antfu sets a plain parser on .astro when Prettier formats them, which skips
-  // every JS rule in the frontmatter. Keep the Astro parser so imports,
-  // unused variables and the `public/` restriction are checked there too.
+  // Keep the Astro parser: the formatter's plain parser skips every JS rule in the frontmatter.
   .override('antfu/formatter/astro', ({ languageOptions: _, ...config }) => config)

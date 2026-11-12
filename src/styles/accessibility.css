@@ -1,5 +1,3 @@
-/* Focus indicator and screen-reader-only text. */
-
 :focus-visible {
   outline: 2px solid transparent;
   outline-offset: 2px;

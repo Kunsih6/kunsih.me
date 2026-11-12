@@ -1,5 +1,3 @@
-/* Printing or saving as PDF: real colors and everything in its final state. */
-
 @media print {
   body {
     -webkit-print-color-adjust: exact;

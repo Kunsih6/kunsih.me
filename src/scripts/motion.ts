@@ -1,12 +1,4 @@
-/**
- * Scroll and pointer motion from the design, with the Web Animations API and
- * IntersectionObserver. The hero intro, the status pulse and the theme scan are
- * set up in their own components.
- *
- * Nothing here runs with reduced motion, and the page never depends on it: every
- * element is in its final state in the HTML and is only hidden right before it
- * animates in.
- *
+/*
  * Markup hooks:
  * - `data-reveal="up"` fades and lifts the element in when it scrolls into view.
  * - `data-reveal="words" | "chars"` raises the masked parts of a `SplitText` inside it.
@@ -37,7 +29,6 @@ function prepare(el: Element, keyframes: Keyframe[], options: KeyframeAnimationO
   return animation
 }
 
-/** Section content rises in once, the first time it scrolls into view. */
 function reveals() {
   const pending = new Map<Element, Animation[]>()
 
@@ -90,7 +81,6 @@ function reveals() {
   pending.forEach((_, el) => observer.observe(el))
 }
 
-/** Effects tied to the scroll position, updated once per frame. */
 function scrollLinked() {
   const progress = document.querySelector<HTMLElement>('[data-progress]')
   const scrub = document.querySelector<HTMLElement>('[data-scrub]')
@@ -114,9 +104,8 @@ function scrollLinked() {
         : 0})`
     }
 
-    // Words light up one after another as the statement enters: from its top reaching the
-    // bottom of the viewport (p = 0) to its bottom reaching 90% of it (p = 1). Every word
-    // is lit by p ≈ 0.8, so a statement that is fully on screen is never left dim.
+    // p is 0 when the statement's top meets the viewport bottom and 1 when its bottom reaches 90%;
+    // every word is lit by p ≈ 0.8.
     if (scrub) {
       const { top, height } = scrub.getBoundingClientRect()
       const p = clamp((viewport - top) / (height + viewport * 0.1))
@@ -139,7 +128,6 @@ function scrollLinked() {
   update()
 }
 
-/** The hero's ghost leans away from a mouse pointer. */
 function ghostFollowsPointer() {
   const ghost = document.querySelector<HTMLElement>('[data-ghost-x]')
   if (!ghost) {
@@ -176,6 +164,5 @@ if (canAnimate) {
     ghostFollowsPointer()
     startCursorTrail()
   }
-  // Printing or saving as PDF shows everything in its final state.
   addEventListener('beforeprint', () => animations.forEach(animation => animation.finish()))
 }

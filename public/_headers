@@ -1,9 +1,4 @@
-# Response headers for the static files on Cloudflare (not served itself).
-# https://developers.cloudflare.com/workers/static-assets/headers/
-
-# Astro fingerprints every file in /_astro/ (CSS, JS, fonts, images): a change gets a new name.
-# Rules match by path, not status, so the 404 page for a missing /_astro/ file is cached too.
-# Only a page from an older deploy asks for such a name; reloading it gets the current files.
+# Fingerprinted by Astro: a changed file gets a new name.
 /_astro/*
   Cache-Control: public, max-age=31536000, immutable
 

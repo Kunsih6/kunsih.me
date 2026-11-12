@@ -87,7 +87,6 @@ const jsonLd = profile
 <meta name="theme-color" content={site.themeColor.dark} media="(prefers-color-scheme: dark)" />
 <meta name="theme-color" content={site.themeColor.light} media="(prefers-color-scheme: light)" />
 
-<!-- Open Graph -->
 <meta property="og:type" content={profile ? 'profile' : 'website'} />
 <meta property="og:site_name" content={site.brand} />
 <meta property="og:title" content={title} />
@@ -104,7 +103,6 @@ const jsonLd = profile
 <meta property="og:image:alt" content={imageAlt} />
 {profile && <meta property="profile:username" content={site.brand} />}
 
-<!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />

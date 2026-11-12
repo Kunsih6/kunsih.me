@@ -23,11 +23,7 @@ const { roles } = experience
 
   <ExperienceTimeline roles={roles} lang={lang} />
 
-  <!--
-    Document order is tab, panel, tab, panel: the order the accordion shows on small screens.
-    On large screens the tabs fill the left column and the open panel the right one.
-    Without JavaScript every panel stays visible.
-  -->
+  <!-- Tab, panel, tab, panel: the accordion order on small screens. Without JavaScript every panel stays visible. -->
   <div class="roles" style={`--roles: ${roles.length}`} data-roles data-reveal="up">
     {roles.map((role, i) => (
       <>
@@ -89,8 +85,6 @@ const { roles } = experience
 </SectionLayout>
 
 <style>
-  /* ---------- Shared: tabs and panels ---------- */
-
   .roles {
     display: flex;
     flex-direction: column;
@@ -217,7 +211,6 @@ const { roles } = experience
     gap: 8px;
   }
 
-  /* Reading measure: text does not stretch with the panel on wide screens. */
   .panel-body > p,
   .highlights li > span:last-child {
     max-width: 58ch;
@@ -345,7 +338,6 @@ const { roles } = experience
       }
     }
 
-    /** Fades the new panel's blocks in, one after another. */
     const reveal = (panel: HTMLElement | null) => {
       if (reducedMotion.matches) {
         return
@@ -362,9 +354,8 @@ const { roles } = experience
       )
     }
 
-    /** Opens role `index` (or closes every role with -1) and highlights it on the timeline. */
+    /** `-1` closes every role. */
     const select = (index: number, { focus = false, user = false } = {}) => {
-      // On small screens it is an accordion: tapping the open role closes it.
       if (user && smallScreen.matches && index === current()) {
         index = -1
       }
@@ -393,12 +384,10 @@ const { roles } = experience
 
     tabs.forEach((tab, i) => tab.addEventListener('click', () => select(i, { user: true })))
 
-    // Timeline segments pick the role and move focus to its tab.
     for (const segment of section.querySelectorAll<HTMLElement>('[data-segment]')) {
       segment.addEventListener('click', () => select(Number(segment.dataset.segment), { focus: true }))
     }
 
-    // Arrow keys, Home and End move focus between the tabs; Enter or Space opens one.
     section.querySelector<HTMLElement>('[data-roles]')?.addEventListener('keydown', (event) => {
       const index = tabs.indexOf(document.activeElement as HTMLButtonElement)
       const moves: Partial<Record<string, number>> = {

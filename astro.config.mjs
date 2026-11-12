@@ -8,9 +8,7 @@ const defaultLocale = 'en'
 const locales = ['en', 'es']
 
 /**
- * Astro writes only the root 404 as `404.html`; `src/pages/es/404.astro` becomes
- * `es/404/index.html`. Hosts that serve the nearest `404.html` for a missing path
- * (e.g. Cloudflare) need `es/404.html` to show the Spanish page under `/es/`.
+ * Cloudflare serves the nearest `404.html`, but Astro writes `es/404/index.html`: move it.
  * @returns {import('astro').AstroIntegration} The integration.
  */
 function localeNotFoundPages() {
@@ -27,7 +25,6 @@ function localeNotFoundPages() {
   }
 }
 
-// https://astro.build/config
 export default defineConfig({
   site: 'https://kunsih.me',
   trailingSlash: 'ignore',
@@ -36,7 +33,6 @@ export default defineConfig({
     defaultLocale,
     locales,
     routing: {
-      // English lives at `/`, Spanish at `/es/`.
       prefixDefaultLocale: false,
     },
   },
@@ -50,13 +46,11 @@ export default defineConfig({
           es: 'es',
         },
       },
-      // The 404 pages must not be indexed.
       filter: page => !page.includes('/404'),
     }),
     localeNotFoundPages(),
   ],
 
-  // Self-hosted at build time by the Astro Fonts API (no request to Google from the visitor).
   fonts: [
     {
       provider: fontProviders.google(),

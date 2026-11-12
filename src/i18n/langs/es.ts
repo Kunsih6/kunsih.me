@@ -1,6 +1,5 @@
 import type { Messages } from './en'
 
-/** Spanish interface strings. Must have exactly the keys defined in `en.ts`. */
 export default {
   seo: {
     title: 'Estuardo Aguirre — Ingeniero de software, desarrollador full stack',

@@ -48,7 +48,6 @@ const t = useTranslations(getLang(Astro.currentLocale))
    * clip-path, which would also clip the echo drawn outside it on hover.
    */
   .btn--primary {
-    /* The echo below takes the face's hover color. */
     --echo-line: var(--inverse);
 
     position: relative;
@@ -72,7 +71,6 @@ const t = useTranslations(getLang(Astro.currentLocale))
   }
 
   .btn--ghost {
-    /* The echo below: its line color and the surface that hides its inside. */
     --echo-line: var(--ink);
     --echo-mask: var(--bg);
 
@@ -115,11 +113,8 @@ const t = useTranslations(getLang(Astro.currentLocale))
   }
 
   /*
-   * Bordered buttons lift off their own outline, like the hero's echo: on hover the
-   * button moves up-left and a copy of its border stays where it was, showing at the
-   * bottom-right edges (an outer box-shadow is never drawn inside the box, and the
-   * first shadow hides the copy's inside). Pressing pushes it back into the outline.
-   * Only with a mouse and without reduced motion; otherwise just the border color.
+   * Bordered buttons lift up-left off a copy of their border, drawn with box-shadows
+   * (the first hides the copy's inside). Mouse only, without reduced motion.
    */
   @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
     .btn--ghost {
@@ -157,16 +152,13 @@ const t = useTranslations(getLang(Astro.currentLocale))
       transition-timing-function: var(--ease-out);
     }
 
-    /* Keyboard focus keeps its ring instead of the echo. */
     .btn--ghost:focus-visible {
       box-shadow: var(--focus-ring);
     }
 
     /*
-     * The filled button does the same. Its echo is the face's outline, cut corner
-     * included, drawn with gradients instead of a clip-path: that way the layer still
-     * catches the pointer where the button was, so the lift cannot flicker. It moves
-     * back by the lift, so it stays put, and it hides under the face at rest.
+     * The filled button's echo is its outline drawn with gradients, not a clip-path, so it
+     * still catches the pointer and the lift cannot flicker.
      */
     .btn--primary {
       transition:

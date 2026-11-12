@@ -1,7 +1,3 @@
-/**
- * English interface strings, grouped by area. This file defines the message
- * shape: every other language file must provide exactly the same keys.
- */
 const en = {
   seo: {
     title: 'Estuardo Aguirre — Software Engineer, Full Stack Developer',

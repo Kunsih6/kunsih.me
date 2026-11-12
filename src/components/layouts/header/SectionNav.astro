@@ -3,10 +3,6 @@ import type { HTMLAttributes } from 'astro/types'
 import NavControl from '@/components/common/NavControl.astro'
 import { getLang, useTranslations } from '@/i18n/utils'
 
-/*
- * Links to the sections of the page; the script marks the one being read. The header passes
- * `class` to place it in the bar and narrows the links with `--nav-link-pad`.
- */
 type Props = HTMLAttributes<'nav'>
 
 const { class: className, ...rest } = Astro.props
@@ -28,7 +24,7 @@ const links = [
 </nav>
 
 <script>
-  // Marks the section being read in the nav. It is state, not motion, so it always runs.
+  // State, not motion: it also runs with reduced motion.
   const spied = [...document.querySelectorAll<HTMLAnchorElement>('[data-spy] a[href^="#"]')]
   if (spied.length) {
     const sections = spied.map((link) => document.getElementById(link.hash.slice(1)))
@@ -67,7 +63,6 @@ const links = [
     padding: 0 var(--nav-link-pad, 12px);
   }
 
-  /* The section being read, set by the script above. */
   .link[aria-current='location'] {
     color: var(--accent);
     text-decoration: underline;

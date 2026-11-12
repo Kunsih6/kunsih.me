@@ -1,11 +1,6 @@
 import type { Lang } from '@/i18n/ui'
 import type { YearMonth } from '@/utils/date'
 
-/*
- * Page content per locale, from the design. Dates are `YYYY-MM`: the site formats
- * them and computes the durations per locale (src/utils/date.ts).
- */
-
 export interface Fact {
   label: string
   value: string
@@ -60,7 +55,6 @@ export interface CV {
     eyebrow: string
     title: string
     mailLabel: string
-    /** Address shown and linked in the contact section. */
     email: string
     pitch: string
     emailCta: string

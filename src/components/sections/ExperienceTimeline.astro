@@ -7,18 +7,15 @@ interface Props {
   /** Roles in display order: segment `i` selects the role tab `i`. */
   roles: Role[]
   lang: Lang
-  /** Index of the role highlighted on first render. */
   active?: number
 }
 
-/** A role on the bar; `index` is its position in `roles`. */
 interface RolePiece {
   kind: 'role'
   index: number
   months: number
 }
 
-/** Time between roles. */
 interface GapPiece {
   kind: 'gap'
   months: number
@@ -26,14 +23,12 @@ interface GapPiece {
 
 const { roles, lang, active = 0 } = Astro.props
 
-// Oldest role on the left; the axis ends at the build month.
 const chronological = roles
   .map((role, index) => ({ role, index }))
   .sort((a, b) => monthsBetween(b.role.start, a.role.start))
 const from = chronological[0].role.start
 const to = currentYearMonth()
 
-// Segments are sized by months; the time between roles is drawn as one tick per month.
 const pieces: (RolePiece | GapPiece)[] = []
 let cursor = from
 for (const { role, index } of chronological) {

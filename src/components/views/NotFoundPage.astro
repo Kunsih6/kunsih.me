@@ -4,7 +4,6 @@ import SectionLayout from '@/components/layouts/SectionLayout.astro'
 import { getLang, localizedPath, useTranslations } from '@/i18n/utils'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 
-// One 404 per locale (`/404.html`, `/es/404.html`); the language comes from the route.
 const lang = getLang(Astro.currentLocale)
 const t = useTranslations(lang)
 ---

@@ -3,11 +3,6 @@ import Icon from '@/components/common/Icon.astro'
 import NavControl from '@/components/common/NavControl.astro'
 import { getLang, useTranslations } from '@/i18n/utils'
 
-/*
- * Switches between the dark and light themes and saves the choice, which BaseLayout applies
- * before first paint. Where View Transitions exist, a scanner line sweeps across the screen
- * and leaves the new theme behind it.
- */
 const t = useTranslations(getLang(Astro.currentLocale))
 ---
 
@@ -48,7 +43,6 @@ const t = useTranslations(getLang(Astro.currentLocale))
     buttons.forEach(syncLabels)
   }
 
-  /** The scanner line (global styles at the end of this file), created on the first switch. */
   function scanLine(): HTMLElement {
     let line = document.querySelector<HTMLElement>('.scan')
     if (!line) {
@@ -64,7 +58,6 @@ const t = useTranslations(getLang(Astro.currentLocale))
   function switchTheme(button: HTMLButtonElement) {
     const next: Theme = root.dataset.theme === 'light' ? 'dark' : 'light'
 
-    // A second click during the sweep ends it and applies the theme at once.
     if (sweep) {
       sweep.skipTransition()
       setTheme(next)
@@ -74,7 +67,6 @@ const t = useTranslations(getLang(Astro.currentLocale))
       setTheme(next)
       return
     }
-    // With reduced motion, the default short crossfade only.
     if (reducedMotion.matches) {
       document.startViewTransition(() => setTheme(next))
       return
@@ -132,12 +124,7 @@ const t = useTranslations(getLang(Astro.currentLocale))
 </style>
 
 <style is:global>
-  /*
-   * Theme switch: a scanner line crosses the screen and leaves the new theme behind it
-   * (View Transitions, started by the button above). It sweeps left to right into the
-   * light theme and back right to left into the dark one. Global: the script appends
-   * the line to <body>, and the transition pseudo-elements belong to <html>.
-   */
+  /* Global: the script appends the line to <body>, and the transition pseudo-elements belong to <html>. */
   .scan {
     position: fixed;
     top: 0;
@@ -205,7 +192,6 @@ const t = useTranslations(getLang(Astro.currentLocale))
     animation: scan-flash 640ms linear both;
   }
 
-  /* Both ends are `inset()`: `none` cannot be interpolated, so the reveal would jump. */
   @keyframes scan-reveal {
     from {
       clip-path: inset(0 100% 0 0);
