@@ -26,6 +26,8 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-# Claude Code settings, shared and local, in any folder (the rest of .claude/ stays tracked)
+# Claude Code settings (shared and local) and preview server config, in any folder
+# (the rest of .claude/, such as the project skills, stays tracked)
 **/.claude/settings.json
 **/.claude/settings.local.json
+**/.claude/launch.json
