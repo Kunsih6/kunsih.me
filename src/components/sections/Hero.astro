@@ -1,6 +1,7 @@
 ---
 import ButtonLink from '@/components/common/ButtonLink.astro'
 import Wordmark from '@/components/common/Wordmark.astro'
+import SectionLayout from '@/components/layouts/SectionLayout.astro'
 import { site } from '@/config/site'
 import { cv } from '@/data/cv'
 import { getLang } from '@/i18n/utils'
@@ -8,8 +9,8 @@ import { getLang } from '@/i18n/utils'
 const { hero } = cv[getLang(Astro.currentLocale)]
 ---
 
-<section class="hero" aria-labelledby="hero-title">
-  <div class="inner gutter">
+<SectionLayout class="hero" spacing="none" divider aria-labelledby="hero-title">
+  <div class="inner">
     <div class="meta t-code t-muted">
       <span>N° 001 // KS-CV // {hero.updated}</span>
       <span>
@@ -41,15 +42,15 @@ const { hero } = cv[getLang(Astro.currentLocale)]
       </div>
     </div>
   </div>
-</section>
+</SectionLayout>
 
 <style>
+  /* Fills the first screen; the vertical padding is on .inner, which grows into it. */
   .hero {
     display: flex;
     flex-direction: column;
     min-height: calc(100vh - var(--nav-h));
     min-height: calc(100dvh - var(--nav-h));
-    border-bottom: 1px solid var(--line);
     overflow: hidden;
   }
 

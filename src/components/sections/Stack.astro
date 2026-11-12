@@ -1,12 +1,15 @@
 ---
 import SectionHeader from '@/components/common/SectionHeader.astro'
+import SectionLayout from '@/components/layouts/SectionLayout.astro'
 import { cv } from '@/data/cv'
 import { getLang } from '@/i18n/utils'
 
 const { stack } = cv[getLang(Astro.currentLocale)]
+
+// Continues the experience section, so it has no top padding.
 ---
 
-<section id="stack" class="stack-section" aria-labelledby="stack-title">
+<SectionLayout id="stack" spacing="bottom" aria-labelledby="stack-title">
   <SectionHeader index={4} eyebrow={stack.eyebrow} title={stack.title} titleId="stack-title" />
 
   <div class="groups">
@@ -21,14 +24,9 @@ const { stack } = cv[getLang(Astro.currentLocale)]
       </div>
     ))}
   </div>
-</section>
+</SectionLayout>
 
 <style>
-  /* Continues the experience section, so it has no top padding. */
-  .stack-section {
-    padding: 0 var(--gutter) var(--section-y);
-  }
-
   .groups {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr));

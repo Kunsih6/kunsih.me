@@ -1,5 +1,6 @@
 ---
 import ButtonLink from '@/components/common/ButtonLink.astro'
+import SectionLayout from '@/components/layouts/SectionLayout.astro'
 import { getLang, localizedPath, useTranslations } from '@/i18n/utils'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 
@@ -9,7 +10,7 @@ const t = useTranslations(lang)
 ---
 
 <BaseLayout title={`404 — ${t('notFound.title')}`} description={t('notFound.description')} noindex minimal>
-  <section class="not-found section">
+  <SectionLayout class="not-found">
     <p class="t-label t-muted">ERR // 404</p>
     <h1 class="code">404</h1>
     <div class="message">
@@ -17,7 +18,7 @@ const t = useTranslations(lang)
       <p class="t-body-lg t-muted">{t('notFound.description')}</p>
       <ButtonLink href={localizedPath(lang)}>{t('notFound.cta')}</ButtonLink>
     </div>
-  </section>
+  </SectionLayout>
 </BaseLayout>
 
 <style>

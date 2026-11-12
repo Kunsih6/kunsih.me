@@ -1,5 +1,6 @@
 ---
 import ButtonLink from '@/components/common/ButtonLink.astro'
+import SectionLayout from '@/components/layouts/SectionLayout.astro'
 import { site } from '@/config/site'
 import { cv } from '@/data/cv'
 import { getLang } from '@/i18n/utils'
@@ -8,7 +9,7 @@ const { contact } = cv[getLang(Astro.currentLocale)]
 const [mailUser, mailDomain] = site.email.split('@')
 ---
 
-<section id="contact" class="contact gutter" aria-labelledby="contact-title">
+<SectionLayout id="contact" class="contact" spacing="none" aria-labelledby="contact-title">
   <div class="block">
     <p class="t-label inv-muted">N° 005 — {contact.eyebrow}</p>
 
@@ -39,7 +40,7 @@ const [mailUser, mailDomain] = site.email.split('@')
       </div>
     </div>
   </div>
-</section>
+</SectionLayout>
 
 <style>
   .block {

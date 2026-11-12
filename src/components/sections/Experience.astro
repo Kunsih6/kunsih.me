@@ -1,6 +1,7 @@
 ---
 import Icon from '@/components/common/Icon.astro'
 import SectionHeader from '@/components/common/SectionHeader.astro'
+import SectionLayout from '@/components/layouts/SectionLayout.astro'
 import ExperienceTimeline from '@/components/sections/ExperienceTimeline.astro'
 import { cv } from '@/data/cv'
 import { getLang } from '@/i18n/utils'
@@ -11,7 +12,7 @@ const { experience } = cv[lang]
 const { roles } = experience
 ---
 
-<section id="experience" class="section" aria-labelledby="experience-title" data-experience>
+<SectionLayout id="experience" aria-labelledby="experience-title" data-experience>
   <SectionHeader
     index={3}
     eyebrow={experience.eyebrow}
@@ -85,7 +86,7 @@ const { roles } = experience
       </>
     ))}
   </div>
-</section>
+</SectionLayout>
 
 <style>
   /* ---------- Shared: tabs and panels ---------- */

@@ -22,7 +22,7 @@ const links = [
 ---
 
 <header class="header">
-  <div class="bar gutter">
+  <div class="bar">
     <a href={minimal ? home : '#top'} class="brand">
       <Wordmark />
       <span class="sr-only">
@@ -120,6 +120,7 @@ const links = [
     justify-content: space-between;
     column-gap: 24px;
     min-height: 56px;
+    padding-inline: var(--gutter);
   }
 
   .brand {

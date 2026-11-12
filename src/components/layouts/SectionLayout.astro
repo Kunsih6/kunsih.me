@@ -1,0 +1,43 @@
+---
+/*
+ * The shell every content section renders in: a <section> with the page gutters and
+ * the vertical rhythm between sections. The section passes its own id,
+ * aria-labelledby, data hooks and class; Astro forwards its style scope through the
+ * spread props, so the section's own styles still apply to this element.
+ */
+import type { HTMLAttributes } from 'astro/types'
+
+interface Props extends HTMLAttributes<'section'> {
+  /**
+   * Vertical padding: `both` (default); `bottom` for a section that continues the
+   * previous one; `none` for a section that sets its own.
+   */
+  spacing?: 'both' | 'bottom' | 'none'
+  /** A rule under the section, before the next one. */
+  divider?: boolean
+}
+
+const { spacing = 'both', divider = false, class: className, ...rest } = Astro.props
+---
+
+<section class:list={['section', `section--${spacing}`, { 'section--divider': divider }, className]} {...rest}>
+  <slot />
+</section>
+
+<style>
+  .section {
+    padding-inline: var(--gutter);
+  }
+
+  .section--both {
+    padding-block: var(--section-y);
+  }
+
+  .section--bottom {
+    padding-bottom: var(--section-y);
+  }
+
+  .section--divider {
+    border-bottom: 1px solid var(--line);
+  }
+</style>

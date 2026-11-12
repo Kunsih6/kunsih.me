@@ -13,7 +13,7 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
 Group components in `src/components/` by role:
 
 - `views/`: one component per page (e.g. `HomePage.astro`). Files in `src/pages/` only render a view, so every locale route reuses the same view.
-- `layouts/`: pieces of the page shell used by `src/layouts/BaseLayout.astro` (`SEO`, `Header`, `Footer`).
+- `layouts/`: pieces of the page shell used by `src/layouts/BaseLayout.astro` (`SEO`, `Header`, `Footer`), and `SectionLayout`, the `<section>` every content section renders in. It sets the gutters, the vertical spacing (`spacing`: `both`, `bottom` or `none`) and an optional `divider`. Pass the section's `id`, `aria-labelledby`, data hooks and `class` to it; its own styles still apply.
 - `common/`: reusable UI building blocks (`ButtonLink`, `Icon`, `SectionHeader`).
 - `sections/`: the content sections a view is made of (`Hero`, `Experience`, ...).
 
@@ -28,7 +28,7 @@ Never import from `public/` (`~/public/...` or `../public/...`): ESLint rejects 
 
 ## Styles
 
-- Global styles live in `src/styles/`, one file per purpose (`tokens`, `base`, `typography`, `layout`, `accessibility`, `motion`, `print`). `main.css` imports them all, and `BaseLayout.astro` imports `main.css` once.
+- Global styles live in `src/styles/`, one file per purpose (`tokens`, `base`, `typography`, `accessibility`, `motion`, `print`). `main.css` imports them all, and `BaseLayout.astro` imports `main.css` once.
 - Only styles shared by several components go there. A style that a single component uses lives in that component's `<style>`.
 
 ## i18n

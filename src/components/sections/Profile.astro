@@ -1,12 +1,13 @@
 ---
 import SectionHeader from '@/components/common/SectionHeader.astro'
+import SectionLayout from '@/components/layouts/SectionLayout.astro'
 import { cv } from '@/data/cv'
 import { getLang } from '@/i18n/utils'
 
 const { profile } = cv[getLang(Astro.currentLocale)]
 ---
 
-<section id="profile" class="section profile" aria-labelledby="profile-title">
+<SectionLayout id="profile" divider aria-labelledby="profile-title">
   <SectionHeader index={2} eyebrow={profile.eyebrow}>
     <h2 id="profile-title" class="t-title statement">
       {profile.statement} <span class="t-accent">{profile.statementAccent}</span>
@@ -21,13 +22,9 @@ const { profile } = cv[getLang(Astro.currentLocale)]
       </div>
     ))}
   </dl>
-</section>
+</SectionLayout>
 
 <style>
-  .profile {
-    border-bottom: 1px solid var(--line);
-  }
-
   .statement {
     max-width: 28em;
   }
