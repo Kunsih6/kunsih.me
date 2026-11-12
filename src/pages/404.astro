@@ -1,0 +1,67 @@
+---
+import ButtonLink from '@/components/common/ButtonLink.astro'
+import { ui } from '@/i18n/ui'
+import { localizedPath } from '@/i18n/utils'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+
+// A single 404 is served for every locale, so it shows both languages.
+const { en, es } = ui
+---
+
+<BaseLayout
+  title={`404 — ${en['notFound.title']} · ${es['notFound.title']}`}
+  description={en['notFound.description']}
+  noindex
+  minimal
+>
+  <section class="not-found section">
+    <p class="t-label t-muted">ERR // 404</p>
+    <h1 class="code">404</h1>
+    <div class="langs">
+      <div class="lang">
+        <h2 class="t-title">{en['notFound.title']}</h2>
+        <p class="t-body-lg t-muted">{en['notFound.description']}</p>
+        <ButtonLink href={localizedPath('en')}>{en['notFound.cta']}</ButtonLink>
+      </div>
+      <div class="lang" lang="es">
+        <h2 class="t-title">{es['notFound.title']}</h2>
+        <p class="t-body-lg t-muted">{es['notFound.description']}</p>
+        <ButtonLink href={localizedPath('es')} variant="ghost">
+          {es['notFound.cta']}
+        </ButtonLink>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    min-height: calc(100dvh - var(--nav-h) - 100px);
+  }
+
+  .code {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(96px, 20vw, 280px);
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+  }
+
+  .langs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+    gap: 40px;
+  }
+
+  .lang {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+</style>
