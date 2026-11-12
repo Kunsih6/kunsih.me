@@ -37,6 +37,9 @@
   --cut-sm: 8px;
   --cut-lg: 32px;
   --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+
+  /* Motion: a strong ease-out for UI responses (press, enter). */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 :root[data-theme='light'] {

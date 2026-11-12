@@ -43,32 +43,66 @@ const t = useTranslations(getLang(Astro.currentLocale))
       border-color 140ms linear;
   }
 
-  /* Cut bottom-right corner. */
+  /*
+   * The filled face is a layer, not the link's own background: its cut corner is a
+   * clip-path, which would also clip the echo drawn outside it on hover.
+   */
   .btn--primary {
-    background: var(--cobalt);
+    /* The echo below takes the face's hover color. */
+    --echo-line: var(--inverse);
+
+    position: relative;
+    isolation: isolate;
     color: var(--on-cobalt);
+  }
+
+  .btn--primary.btn--inverse {
+    --echo-line: var(--bg);
+  }
+
+  .btn--primary::before {
+    content: '';
+    position: absolute;
+    /* The border box: the face also fills under the transparent border. */
+    inset: -1px;
+    z-index: -1;
+    background: var(--cobalt);
     clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut-sm)), calc(100% - var(--cut-sm)) 100%, 0 100%);
+    transition: background-color 140ms linear;
   }
 
   .btn--ghost {
+    /* The echo below: its line color and the surface that hides its inside. */
+    --echo-line: var(--ink);
+    --echo-mask: var(--bg);
+
     border-color: var(--line-strong);
     color: var(--ink);
   }
 
   .btn--ghost.btn--inverse {
+    --echo-line: var(--ink-inverse);
+    --echo-mask: var(--inverse);
+
     border-color: var(--inv-line-strong);
     color: var(--ink-inverse);
   }
 
   @media (hover: hover) {
     .btn--primary:hover {
-      background: var(--inverse);
       color: var(--ink-inverse);
     }
 
+    .btn--primary:hover::before {
+      background: var(--inverse);
+    }
+
     .btn--primary.btn--inverse:hover {
-      background: var(--bg);
       color: var(--ink);
+    }
+
+    .btn--primary.btn--inverse:hover::before {
+      background: var(--bg);
     }
 
     .btn--ghost:hover {
@@ -77,6 +111,111 @@ const t = useTranslations(getLang(Astro.currentLocale))
 
     .btn--ghost.btn--inverse:hover {
       border-color: var(--ink-inverse);
+    }
+  }
+
+  /*
+   * Bordered buttons lift off their own outline, like the hero's echo: on hover the
+   * button moves up-left and a copy of its border stays where it was, showing at the
+   * bottom-right edges (an outer box-shadow is never drawn inside the box, and the
+   * first shadow hides the copy's inside). Pressing pushes it back into the outline.
+   * Only with a mouse and without reduced motion; otherwise just the border color.
+   */
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .btn--ghost {
+      position: relative;
+      box-shadow:
+        0 0 0 -1px var(--echo-mask),
+        0 0 0 0 var(--echo-line);
+      transition:
+        color 140ms linear,
+        border-color 140ms linear,
+        transform 200ms ease,
+        box-shadow 200ms ease;
+    }
+
+    .btn--ghost:hover {
+      transform: translate(-4px, -4px);
+      box-shadow:
+        4px 4px 0 -1px var(--echo-mask),
+        4px 4px 0 0 var(--echo-line);
+    }
+
+    /* Keeps the pointer over the button where it was, so the lift cannot flicker. */
+    .btn--ghost:hover::after {
+      content: '';
+      position: absolute;
+      inset: 0 -4px -4px 0;
+    }
+
+    .btn--ghost:active {
+      transform: none;
+      box-shadow:
+        0 0 0 -1px var(--echo-mask),
+        0 0 0 0 var(--echo-line);
+      transition-duration: 100ms;
+      transition-timing-function: var(--ease-out);
+    }
+
+    /* Keyboard focus keeps its ring instead of the echo. */
+    .btn--ghost:focus-visible {
+      box-shadow: var(--focus-ring);
+    }
+
+    /*
+     * The filled button does the same. Its echo is the face's outline, cut corner
+     * included, drawn with gradients instead of a clip-path: that way the layer still
+     * catches the pointer where the button was, so the lift cannot flicker. It moves
+     * back by the lift, so it stays put, and it hides under the face at rest.
+     */
+    .btn--primary {
+      transition:
+        color 140ms linear,
+        transform 200ms ease;
+    }
+
+    .btn--primary::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      z-index: -2;
+      background:
+        linear-gradient(var(--echo-line) 0 0) left top / 100% 1px,
+        linear-gradient(var(--echo-line) 0 0) left top / 1px 100%,
+        linear-gradient(var(--echo-line) 0 0) right top / 1px calc(100% - var(--cut-sm)),
+        linear-gradient(var(--echo-line) 0 0) left bottom / calc(100% - var(--cut-sm)) 1px,
+        linear-gradient(
+            to top left,
+            transparent calc(50% - 0.5px),
+            var(--echo-line) calc(50% - 0.5px) calc(50% + 0.5px),
+            transparent calc(50% + 0.5px)
+          )
+          right bottom / var(--cut-sm) var(--cut-sm);
+      background-repeat: no-repeat;
+      opacity: 0;
+      transition:
+        transform 200ms ease,
+        opacity 200ms ease;
+    }
+
+    .btn--primary:hover {
+      transform: translate(-4px, -4px);
+    }
+
+    .btn--primary:hover::after {
+      transform: translate(4px, 4px);
+      opacity: 1;
+    }
+
+    .btn--primary:active,
+    .btn--primary:active::after {
+      transform: none;
+      transition-duration: 100ms;
+      transition-timing-function: var(--ease-out);
+    }
+
+    .btn--primary:active::after {
+      opacity: 0;
     }
   }
 
