@@ -4,8 +4,8 @@
  */
 const en = {
   seo: {
-    title: 'Estuardo Aguirre — Software Engineer, Frontend & Full Stack',
-    description: 'Digital CV of Estuardo Aguirre, frontend and full stack software engineer. More than 9 years building web and mobile applications with Vue.js, React and TypeScript.',
+    title: 'Estuardo Aguirre — Software Engineer, Full Stack Developer',
+    description: 'Digital CV of Estuardo Aguirre, software engineer and full stack developer. More than 9 years building web and mobile applications with Vue.js, React and TypeScript.',
     jobTitle: 'Software Engineer',
   },
   a11y: {

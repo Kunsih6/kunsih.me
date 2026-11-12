@@ -69,7 +69,7 @@ export interface CV {
 const en: CV = {
   hero: {
     updated: 'Updated 2026.11',
-    headline: 'Estuardo Aguirre. Software engineer, frontend and full stack.',
+    headline: 'Estuardo Aguirre. Software engineer, full stack developer.',
     intro: 'More than 9 years building web and mobile applications with Vue.js, Nuxt, React, Next.js and TypeScript.',
     primaryCta: 'Get in touch',
     secondaryCta: 'Connect on LinkedIn',
@@ -249,7 +249,7 @@ const en: CV = {
 const es: CV = {
   hero: {
     updated: 'Actualizado 2026.11',
-    headline: 'Estuardo Aguirre. Ingeniero de software, frontend y full stack.',
+    headline: 'Estuardo Aguirre. Ingeniero de software, desarrollador full stack.',
     intro: 'Más de 9 años construyendo aplicaciones web y móviles con Vue.js, Nuxt, React, Next.js y TypeScript.',
     primaryCta: 'Contactar',
     secondaryCta: 'Conectar en LinkedIn',
