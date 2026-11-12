@@ -45,6 +45,19 @@ Never import from `public/` (`~/public/...` or `../public/...`): ESLint rejects 
 - For scroll reveals, add `data-reveal="up"` (or `"words"` / `"chars"` around a `SplitText`) and an optional `data-reveal-delay` in ms. `src/scripts/motion.ts` handles them, along with the other scroll- and pointer-linked effects, and does nothing under reduced motion.
 - A `clip-path` keyframe needs `inset()` at both ends: `none` cannot be interpolated, so the animation would jump.
 
+## Deployment
+
+The site is static and deploys to Cloudflare Workers as static assets, with no adapter ([Astro guide](https://docs.astro.build/en/guides/deploy/cloudflare/)).
+
+- `wrangler.jsonc` serves `dist/`. With `not_found_handling: "404-page"`, a missing path gets the nearest `404.html` up its folders, so `/es/...` shows the Spanish page (see `localeNotFoundPages` in `astro.config.mjs`).
+- `public/_headers` sets response headers: a one-year immutable cache for the fingerprinted files in `/_astro/`, and security headers (HSTS, `nosniff`, `Referrer-Policy`, `X-Frame-Options`) for every response. Only fingerprinted files may get the immutable cache: rules match by path, so a file whose name stays the same when its content changes would stay stale for a year.
+- `send_metrics: false` in `wrangler.jsonc` stops Wrangler from sending usage data to Cloudflare, locally and in CI.
+- The `workers.dev` URL and the preview URLs are public. Preview URLs are served with `X-Robots-Tag: noindex`; the `workers.dev` copy of the site is not, and only its canonical links point search engines to `https://kunsih.me`. Once the custom domain serves the site, set `workers_dev: false`.
+- `pnpm preview` builds the site and serves it with Wrangler at `http://localhost:8787`, the way Cloudflare does (404 pages, trailing-slash redirects, headers). `pnpm cf:deploy` builds and deploys from your machine; it needs `wrangler login` once. Don't name a script `deploy`: `pnpm deploy` is a built-in pnpm command.
+- CI/CD is Cloudflare Workers Builds, connected to the GitHub repository. Every push to `main` runs the build command `pnpm check && pnpm build` and then the deploy command `npx wrangler deploy`. With "Enable Preview Builds" on (Settings > Build > Branch control), pushes to other branches of this repository get a preview build, and its URL is posted on the pull request. `pnpm check` runs `astro sync`, ESLint and `tsc`, so a lint or type error fails the build and nothing is deployed.
+- The Worker in the Cloudflare dashboard must be named `kunsih-me`, like `name` in `wrangler.jsonc`, or the build fails. The build reads the Node version from `.nvmrc` and the pnpm version from `packageManager` in `package.json`; keep both in line with local development.
+- `allowBuilds` in `pnpm-workspace.yaml` lets Wrangler's dependencies `esbuild` and `workerd` run their install scripts. A new dependency with install scripts needs an entry there, or `pnpm install` fails.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
