@@ -1,6 +1,6 @@
 /*
- * With a mouse, the pointer lights a short trail of squares on a fixed grid behind it.
- * It never replaces the system cursor.
+ * With a mouse, the pointer lights a short trail of squares on a fixed grid behind it. Once it
+ * rests, a round patch of squares breathes around it. Neither replaces the system cursor.
  */
 
 /** Grid step, px. */
@@ -18,6 +18,19 @@ const ALPHA = 0.35
 const SCATTER = 0.2
 const MAX_PIXELS = 480
 
+/** ms the pointer must rest before the patch starts breathing. */
+const IDLE = 4000
+/** ms for one breath, in and out. */
+const BREATH = 2000
+/** Patch radius at the top of a breath, in squares. */
+const BREATH_RADIUS = 7
+/** Patch radius at the bottom of a breath, as a share of the top. */
+const BREATH_LOW = 0.45
+/** Opacity of the centre square at the top of a breath. */
+const BREATH_ALPHA = 0.3
+/** Moving less than this, px, doesn't wake the patch: a hand on the mouse is never quite still. */
+const JITTER = CELL
+
 /**
  * Offsets across the path, centre first (0, 1, -1, 2, ...). Each one goes out sooner than the
  * one before, so the trail goes from WIDTH squares down to 1.
@@ -34,6 +47,8 @@ interface Pixel {
   alpha: number
 }
 
+type Square = [x: number, y: number, alpha: number]
+
 export function startPixelTrail(): void {
   const canvas = document.createElement('canvas')
   canvas.className = 'pixel-trail'
@@ -47,11 +62,21 @@ export function startPixelTrail(): void {
   const pixels = new Map<string, Pixel>()
   let dpr = 1
   let color = ''
+  /** Grid cell of the pointer. */
   let last: [x: number, y: number] | null = null
   let raf = 0
 
+  let idleTimer = 0
+  /** Where the pointer rests, px, and when the patch started breathing (0 while it isn't). */
+  let restAt: [x: number, y: number] = [0, 0]
+  let breathStart = 0
+  /** The patch as last drawn, and what it was drawn from: an unchanged key skips the redraw. */
+  let breath: Square[] = []
+  let breathKey = ''
+
   const readColor = () => {
     color = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#4d9eea'
+    breathKey = ''
   }
 
   const resize = () => {
@@ -59,6 +84,7 @@ export function startPixelTrail(): void {
     dpr = Math.min(2, devicePixelRatio || 1)
     canvas.width = Math.round(rect.width * dpr)
     canvas.height = Math.round(rect.height * dpr)
+    breathKey = ''
   }
 
   const light = (x: number, y: number, now: number, alpha: number, life: number) => {
@@ -77,15 +103,54 @@ export function startPixelTrail(): void {
     }
   }
 
+  /** Radius in squares and centre opacity of the patch, `t` ms into its breathing, in steps. */
+  const breathAt = (t: number): [radius: number, strength: number] => {
+    // 0 at the bottom of a breath, 1 at the top.
+    const depth = (1 - Math.cos((2 * Math.PI * t) / BREATH)) / 2
+    const radius = BREATH_RADIUS * (BREATH_LOW + (1 - BREATH_LOW) * depth)
+    // The first breath in fades the patch in from nothing; after that it never drops below 40%.
+    const strength = t < BREATH / 2
+      ? depth
+      : 0.4 + 0.6 * depth
+    return [Math.round(radius * 4) / 4, (BREATH_ALPHA * Math.ceil(strength * 8)) / 8]
+  }
+
+  /** The patch's squares around the pointer's cell, dimmer in steps towards the edge. */
+  const patch = ([cx, cy]: [number, number], radius: number, strength: number): Square[] => {
+    const squares: Square[] = []
+    const reach = Math.floor(radius)
+    for (let dy = -reach; dy <= reach; dy++) {
+      for (let dx = -reach; dx <= reach; dx++) {
+        const distance = Math.hypot(dx, dy)
+        if (distance <= radius) {
+          const level = Math.ceil((1 - distance / radius) * STEPS) / STEPS
+          squares.push([cx + dx, cy + dy, strength * level])
+        }
+      }
+    }
+    return squares
+  }
+
   const frame = (now: number) => {
     raf = 0
+    const breathing = breathStart > 0 && last !== null
+    const shape = breathing
+      ? breathAt(now - breathStart)
+      : null
+    const key = shape?.join() ?? ''
+    if (!pixels.size && breathing && key === breathKey) {
+      raf = requestAnimationFrame(frame)
+      return
+    }
+    breathKey = key
+
     ctx.setTransform(1, 0, 0, 1, 0, 0)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     ctx.fillStyle = color
-    for (const [key, pixel] of pixels) {
+    for (const [pixelKey, pixel] of pixels) {
       if (now >= pixel.until) {
-        pixels.delete(key)
+        pixels.delete(pixelKey)
         continue
       }
       // Every square fades on the same curve, so the narrowing reads as steps in width.
@@ -93,10 +158,47 @@ export function startPixelTrail(): void {
       ctx.globalAlpha = pixel.alpha * Math.ceil(Math.min(1, left) * STEPS) / STEPS
       ctx.fillRect(pixel.x * CELL, pixel.y * CELL, SIZE, SIZE)
     }
+    breath = shape && last
+      ? patch(last, ...shape)
+      : []
+    for (const [x, y, alpha] of breath) {
+      ctx.globalAlpha = alpha
+      ctx.fillRect(x * CELL, y * CELL, SIZE, SIZE)
+    }
     ctx.globalAlpha = 1
-    if (pixels.size) {
+    if (pixels.size || breathing) {
       raf = requestAnimationFrame(frame)
     }
+  }
+
+  const kick = () => {
+    raf ||= requestAnimationFrame(frame)
+  }
+
+  /** Stops the breathing and leaves the patch to fade out like the trail. */
+  const wake = () => {
+    clearTimeout(idleTimer)
+    if (!breathStart) {
+      return
+    }
+    const now = performance.now()
+    for (const [x, y, alpha] of breath) {
+      light(x, y, now, alpha, LIFE)
+    }
+    breathStart = 0
+    breath = []
+    breathKey = ''
+    kick()
+  }
+
+  const rest = () => {
+    clearTimeout(idleTimer)
+    idleTimer = window.setTimeout(() => {
+      if (last) {
+        breathStart = performance.now()
+        kick()
+      }
+    }, IDLE)
   }
 
   addEventListener('pointermove', (event) => {
@@ -107,6 +209,13 @@ export function startPixelTrail(): void {
     if (!last && !event.clientX && !event.clientY) {
       return
     }
+    if (breathStart && Math.hypot(event.clientX - restAt[0], event.clientY - restAt[1]) < JITTER) {
+      return
+    }
+    restAt = [event.clientX, event.clientY]
+    wake()
+    rest()
+
     const x = Math.floor(event.clientX / CELL)
     const y = Math.floor(event.clientY / CELL)
     if (!last) {
@@ -137,11 +246,20 @@ export function startPixelTrail(): void {
         light(cx + acrossX * side, cy + acrossY * side, now, ALPHA / 2, LIFE / WIDTH)
       }
     }
-    raf ||= requestAnimationFrame(frame)
+    kick()
   }, { passive: true })
+
+  // A click or a key press counts as activity, so the patch waits again.
+  for (const type of ['pointerdown', 'keydown']) {
+    addEventListener(type, () => {
+      wake()
+      rest()
+    }, { passive: true })
+  }
 
   // A new trail starts where the pointer comes back, not where it left.
   const forget = () => {
+    wake()
     last = null
   }
   document.documentElement.addEventListener('pointerleave', forget)
@@ -152,10 +270,21 @@ export function startPixelTrail(): void {
     }
   })
   addEventListener('blur', forget)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      forget()
+    }
+  })
 
   // Watch the canvas, not the window: Safari's page zoom resizes it without a resize event.
-  new ResizeObserver(resize).observe(canvas)
-  new MutationObserver(readColor).observe(document.documentElement, {
+  new ResizeObserver(() => {
+    resize()
+    kick()
+  }).observe(canvas)
+  new MutationObserver(() => {
+    readColor()
+    kick()
+  }).observe(document.documentElement, {
     attributes: true,
     attributeFilter: ['data-theme'],
   })
