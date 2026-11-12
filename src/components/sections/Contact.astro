@@ -9,7 +9,7 @@ const [mailUser, mailDomain] = site.email.split('@')
 ---
 
 <section id="contact" class="contact gutter" aria-labelledby="contact-title">
-  <div class="block cut-lg">
+  <div class="block">
     <p class="t-label inv-muted">N° 005 — {contact.eyebrow}</p>
 
     <h2 id="contact-title" class="title">
@@ -51,6 +51,8 @@ const [mailUser, mailDomain] = site.email.split('@')
     padding: clamp(36px, 6.5vw, 104px) clamp(28px, 5vw, 72px);
     background: var(--inverse);
     color: var(--ink-inverse);
+    /* Cut bottom-right corner. */
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut-lg)), calc(100% - var(--cut-lg)) 100%, 0 100%);
   }
 
   .inv-muted {

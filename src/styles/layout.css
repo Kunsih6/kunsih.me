@@ -1,0 +1,10 @@
+/* Page spacing shared by the shell and the sections. */
+
+.gutter {
+  padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block: var(--section-y);
+  padding-inline: var(--gutter);
+}

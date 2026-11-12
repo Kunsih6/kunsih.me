@@ -1,0 +1,59 @@
+/*
+ * KUNSIH design tokens.
+ * Dark is the default theme; `[data-theme='light']` on <html> switches it.
+ * Font families (--font-display, --font-sans, --font-mono) come from the
+ * Astro Fonts API (<Font /> in the layout head).
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Color */
+  --bg: #0b0c0e;
+  --surface: #15171b;
+  --inverse: #ebe9e4;
+  --line: #2a2e35;
+  --line-strong: #6c7480;
+  --ink: #eceef1;
+  --ink-muted: #9aa2ad;
+  --ink-inverse: #0b0c0e;
+  --cobalt: #0062ab;
+  --on-cobalt: #ffffff;
+  --navy: #07325e;
+  --accent: #4d9eea;
+  --frost: #0c1f33;
+  --signal: #ff8a3d;
+  /* Colors used on top of the inverse block (contact). */
+  --inv-muted: #55534e;
+  --inv-line-strong: #75726b;
+  --inv-accent: #0059a0;
+
+  /* Layout */
+  --gutter: clamp(24px, 4.5vw, 64px);
+  --section-y: clamp(72px, 9vw, 136px);
+  --nav-h: 57px;
+
+  /* Shape */
+  --cut-sm: 8px;
+  --cut-lg: 32px;
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #ebe9e4;
+  --surface: #f6f5f2;
+  --inverse: #0b0c0e;
+  --line: #cdcac3;
+  --line-strong: #75726b;
+  --ink: #0b0c0e;
+  --ink-muted: #55534e;
+  --ink-inverse: #ebe9e4;
+  --accent: #0059a0;
+  --frost: #d3e1ef;
+  --signal: #b93f0a;
+  --inv-muted: #9aa2ad;
+  --inv-line-strong: #6c7480;
+  --inv-accent: #4d9eea;
+}

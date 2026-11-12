@@ -1,0 +1,13 @@
+/*
+ * Global styles, imported once by BaseLayout. They hold only what several components
+ * share, one file per purpose; a style that a single component uses lives in that
+ * component's <style>.
+ */
+
+@import './tokens.css';
+@import './base.css';
+@import './typography.css';
+@import './layout.css';
+@import './accessibility.css';
+@import './motion.css';
+@import './print.css';

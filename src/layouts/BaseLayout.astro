@@ -5,7 +5,7 @@ import Footer from '@/components/layouts/Footer.astro'
 import Header from '@/components/layouts/Header.astro'
 import SEO from '@/components/layouts/SEO.astro'
 import { getLang, useTranslations } from '@/i18n/utils'
-import '@/styles/global.css'
+import '@/styles/main.css'
 
 type Props = Omit<ComponentProps<typeof SEO>, 'lang'> & {
   /** Hides the section navigation (e.g. on the 404 page). */
@@ -66,5 +66,22 @@ const t = useTranslations(lang)
 <style>
   main:focus {
     outline: none;
+  }
+
+  .skip-link {
+    position: absolute;
+    top: -80px;
+    left: 8px;
+    z-index: 40;
+    padding: 12px 16px;
+    background: var(--inverse);
+    color: var(--ink-inverse);
+    font-size: 13px;
+    line-height: 20px;
+    text-decoration: none;
+  }
+
+  .skip-link:focus {
+    top: 8px;
   }
 </style>

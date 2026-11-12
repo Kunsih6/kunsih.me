@@ -18,13 +18,7 @@ const t = useTranslations(getLang(Astro.currentLocale))
 
 <a
   href={href}
-  class:list={[
-    'btn',
-    `btn--${variant}`,
-    { 'btn--inverse': inverse, 'cut-sm': variant === 'primary' },
-    't-label',
-    className,
-  ]}
+  class:list={['btn', `btn--${variant}`, { 'btn--inverse': inverse }, 't-label', className]}
   {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
   {...rest}
 >
@@ -49,9 +43,11 @@ const t = useTranslations(getLang(Astro.currentLocale))
       border-color 140ms linear;
   }
 
+  /* Cut bottom-right corner. */
   .btn--primary {
     background: var(--cobalt);
     color: var(--on-cobalt);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut-sm)), calc(100% - var(--cut-sm)) 100%, 0 100%);
   }
 
   .btn--ghost {

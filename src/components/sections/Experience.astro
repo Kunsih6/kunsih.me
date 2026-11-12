@@ -41,7 +41,7 @@ const { roles } = experience
         >
           <span class="tab-text">
             <span class="sr-only">{formatRange(role.start, role.end, lang)}</span>
-            <span class="t-heading">{role.company}</span>
+            <span class="tab-company">{role.company}</span>
             <span class="tab-title">{role.title}</span>
           </span>
           <Icon name="chevron-down" size={20} class="chevron" />
@@ -138,6 +138,13 @@ const { roles } = experience
     flex-direction: column;
     gap: 6px;
     min-width: 0;
+  }
+
+  .tab-company {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 1.25;
   }
 
   .tab-title {

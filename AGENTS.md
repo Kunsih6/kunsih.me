@@ -26,6 +26,11 @@ Defined in `tsconfig.json` (`compilerOptions.paths`):
 
 Never import from `public/` (`~/public/...` or `../public/...`): ESLint rejects it. Files in `public/` are served as-is, so reference them by URL (`/og/default.png`). Assets that Astro should process or optimize go in `src/assets/` and are imported with `@/assets/...`.
 
+## Styles
+
+- Global styles live in `src/styles/`, one file per purpose (`tokens`, `base`, `typography`, `layout`, `accessibility`, `motion`, `print`). `main.css` imports them all, and `BaseLayout.astro` imports `main.css` once.
+- Only styles shared by several components go there. A style that a single component uses lives in that component's `<style>`.
+
 ## i18n
 
 - Interface strings live in `src/i18n/langs/<lang>.ts`, one file per language, and `src/i18n/ui.ts` combines them. Group them in nested objects by area (`seo: { title, description }`), not flat dotted keys (`'seo.title'`).
