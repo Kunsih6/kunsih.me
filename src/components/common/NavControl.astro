@@ -1,0 +1,42 @@
+---
+import type { HTMLAttributes } from 'astro/types'
+
+/*
+ * A link or button in a navigation bar: label type, a 44px target, muted until hovered.
+ * With `href` it renders an <a>, otherwise a <button type="button">. The parent adds its own
+ * `class` for spacing and states; its scoped styles apply through the spread attributes.
+ */
+type Props = (HTMLAttributes<'a'> & { href: string }) | (Omit<HTMLAttributes<'button'>, 'href'> & { href?: undefined })
+
+const { class: className, ...rest } = Astro.props
+const Tag = rest.href === undefined ? 'button' : 'a'
+---
+
+<Tag class:list={['nav-control', 't-label', className]} {...(Tag === 'button' ? { type: 'button' } : {})} {...rest}>
+  <slot />
+</Tag>
+
+<style>
+  .nav-control {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ink-muted);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 140ms linear;
+  }
+
+  button.nav-control {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  /* A current item (`aria-current`) keeps the color its parent gives it. */
+  @media (hover: hover) {
+    .nav-control:not([aria-current]):hover {
+      color: var(--ink);
+    }
+  }
+</style>

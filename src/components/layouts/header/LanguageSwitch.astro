@@ -1,0 +1,56 @@
+---
+import NavControl from '@/components/common/NavControl.astro'
+import { languages, locales } from '@/i18n/ui'
+import { getLang, localizedPath, useTranslations } from '@/i18n/utils'
+
+/*
+ * Links to the home page of each language. A click saves the pick, and LanguageRedirect
+ * brings a returning visitor back to it from the default home page.
+ */
+const lang = getLang(Astro.currentLocale)
+const t = useTranslations(lang)
+---
+
+<nav aria-label={t('lang.label')} class="lang t-label" data-lang-switch>
+  {locales.map((l, i) => (
+    <>
+      {i > 0 && <span aria-hidden="true">/</span>}
+      <NavControl
+        href={localizedPath(l)}
+        hreflang={l}
+        lang={l}
+        aria-current={l === lang ? 'page' : undefined}
+        title={languages[l]}
+      >
+        {l.toUpperCase()}
+        <span class="sr-only"> — {languages[l]}</span>
+      </NavControl>
+    </>
+  ))}
+</nav>
+
+<script>
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-lang-switch] a[hreflang]')) {
+    link.addEventListener('click', () => {
+      try {
+        localStorage.setItem('lang', link.hreflang)
+      } catch {}
+    })
+  }
+</script>
+
+<style>
+  .lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink-muted);
+  }
+
+  .lang a[aria-current='page'] {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+  }
+</style>

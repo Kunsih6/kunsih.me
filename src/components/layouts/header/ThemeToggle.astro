@@ -1,0 +1,266 @@
+---
+import Icon from '@/components/common/Icon.astro'
+import NavControl from '@/components/common/NavControl.astro'
+import { getLang, useTranslations } from '@/i18n/utils'
+
+/*
+ * Switches between the dark and light themes and saves the choice, which BaseLayout applies
+ * before first paint. Where View Transitions exist, a scanner line sweeps across the screen
+ * and leaves the new theme behind it.
+ */
+const t = useTranslations(getLang(Astro.currentLocale))
+---
+
+<NavControl
+  class="theme"
+  data-theme-toggle
+  data-label-light={t('theme.switchToLight')}
+  data-label-dark={t('theme.switchToDark')}
+  data-scan-light={t('theme.scan.light')}
+  data-scan-dark={t('theme.scan.dark')}
+  aria-label={t('theme.switchToLight')}
+>
+  <Icon name="theme" />
+  <span class="theme-label" aria-hidden="true">
+    <span class="if-dark">{t('theme.light')}</span>
+    <span class="if-light">{t('theme.dark')}</span>
+  </span>
+</NavControl>
+
+<script>
+  type Theme = 'light' | 'dark'
+
+  const root = document.documentElement
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)')
+  const buttons = [...document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')]
+  let sweep: ViewTransition | null = null
+
+  function syncLabels(button: HTMLButtonElement) {
+    const isDark = root.dataset.theme !== 'light'
+    button.setAttribute('aria-label', (isDark ? button.dataset.labelLight : button.dataset.labelDark) ?? '')
+  }
+
+  function setTheme(theme: Theme) {
+    root.dataset.theme = theme
+    try {
+      localStorage.setItem('theme', theme)
+    } catch {}
+    buttons.forEach(syncLabels)
+  }
+
+  /** The scanner line (global styles at the end of this file), created on the first switch. */
+  function scanLine(): HTMLElement {
+    let line = document.querySelector<HTMLElement>('.scan')
+    if (!line) {
+      line = document.createElement('div')
+      line.className = 'scan'
+      line.setAttribute('aria-hidden', 'true')
+      line.append(Object.assign(document.createElement('span'), { className: 'scan-tag' }))
+      document.body.append(line)
+    }
+    return line
+  }
+
+  function switchTheme(button: HTMLButtonElement) {
+    const next: Theme = root.dataset.theme === 'light' ? 'dark' : 'light'
+
+    // A second click during the sweep ends it and applies the theme at once.
+    if (sweep) {
+      sweep.skipTransition()
+      setTheme(next)
+      return
+    }
+    if (!('startViewTransition' in document)) {
+      setTheme(next)
+      return
+    }
+    // With reduced motion, the default short crossfade only.
+    if (reducedMotion.matches) {
+      document.startViewTransition(() => setTheme(next))
+      return
+    }
+
+    const forward = next === 'light'
+    const line = scanLine()
+    const tag = line.querySelector('.scan-tag')
+    if (tag) {
+      tag.textContent = (forward ? button.dataset.scanLight : button.dataset.scanDark) ?? ''
+    }
+    line.dataset.dir = forward ? 'forward' : 'reverse'
+    line.toggleAttribute('data-on', true)
+    root.classList.add('scanning')
+    root.classList.toggle('scan-reverse', !forward)
+
+    sweep = document.startViewTransition(() => setTheme(next))
+    sweep.finished.finally(() => {
+      sweep = null
+      root.classList.remove('scanning', 'scan-reverse')
+      line.removeAttribute('data-on')
+    })
+  }
+
+  for (const button of buttons) {
+    syncLabels(button)
+    button.addEventListener('click', () => switchTheme(button))
+  }
+</script>
+
+<style>
+  .theme {
+    gap: 8px;
+    min-width: 44px;
+    padding: 0 8px;
+  }
+
+  .if-light {
+    display: none;
+  }
+
+  :global([data-theme='light']) .if-light {
+    display: inline;
+  }
+
+  :global([data-theme='light']) .if-dark {
+    display: none;
+  }
+
+  @media (max-width: 480px) {
+    .theme-label {
+      display: none;
+    }
+  }
+</style>
+
+<style is:global>
+  /*
+   * Theme switch: a scanner line crosses the screen and leaves the new theme behind it
+   * (View Transitions, started by the button above). It sweeps left to right into the
+   * light theme and back right to left into the dark one. Global: the script appends
+   * the line to <body>, and the transition pseudo-elements belong to <html>.
+   */
+  .scan {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 60;
+    width: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 24px 4px var(--accent);
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .scan[data-on] {
+    visibility: visible;
+    view-transition-name: scanline;
+  }
+
+  .scan-tag {
+    position: absolute;
+    top: calc(var(--nav-h) + 20px);
+    right: 12px;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 12px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .scan[data-dir='reverse'] .scan-tag {
+    right: auto;
+    left: 12px;
+  }
+
+  .scanning::view-transition-old(root),
+  .scanning::view-transition-new(root) {
+    mix-blend-mode: normal;
+  }
+
+  .scanning::view-transition-old(root) {
+    animation: none;
+  }
+
+  .scanning::view-transition-new(root) {
+    animation: scan-reveal 640ms cubic-bezier(0.65, 0, 0.35, 1) both;
+  }
+
+  .scanning.scan-reverse::view-transition-new(root) {
+    animation-name: scan-reveal-reverse;
+  }
+
+  /* The line moves with `left`, not a transform, so it stays in step with the reveal. */
+  .scanning::view-transition-group(scanline) {
+    transform: none;
+    animation: scan-move 640ms cubic-bezier(0.65, 0, 0.35, 1) both;
+  }
+
+  .scanning.scan-reverse::view-transition-group(scanline) {
+    animation-name: scan-move-reverse;
+  }
+
+  .scanning::view-transition-image-pair(scanline) {
+    animation: scan-flash 640ms linear both;
+  }
+
+  /* Both ends are `inset()`: `none` cannot be interpolated, so the reveal would jump. */
+  @keyframes scan-reveal {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+
+    to {
+      clip-path: inset(0);
+    }
+  }
+
+  @keyframes scan-reveal-reverse {
+    from {
+      clip-path: inset(0 0 0 100%);
+    }
+
+    to {
+      clip-path: inset(0);
+    }
+  }
+
+  @keyframes scan-move {
+    from {
+      left: 0;
+    }
+
+    to {
+      left: calc(100% - 2px);
+    }
+  }
+
+  @keyframes scan-move-reverse {
+    from {
+      left: calc(100% - 2px);
+    }
+
+    to {
+      left: 0;
+    }
+  }
+
+  @keyframes scan-flash {
+    0%,
+    100% {
+      opacity: 0;
+    }
+
+    10%,
+    90% {
+      opacity: 1;
+    }
+  }
+
+  @media print {
+    .scan {
+      display: none !important;
+    }
+  }
+</style>
