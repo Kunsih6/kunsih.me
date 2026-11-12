@@ -4,7 +4,7 @@ import type { Messages } from './en'
 export default {
   seo: {
     title: 'Estuardo Aguirre — Ingeniero de software, frontend y full stack',
-    description: 'Descripción de ejemplo: CV digital de un ingeniero de software frontend y full stack. Trayectoria, stack y contacto.',
+    description: 'CV digital de Estuardo Aguirre, ingeniero de software frontend y full stack. Más de 9 años construyendo aplicaciones web y móviles con Vue.js, React y TypeScript.',
     jobTitle: 'Ingeniero de software',
   },
   a11y: {
