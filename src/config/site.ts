@@ -1,12 +1,8 @@
-/**
- * Site identity shared by every locale. Values that still need real data are
- * marked with TODO.
- */
+/** Site identity shared by every locale. */
 export const site = {
   brand: 'KUNSIH',
   author: 'Estuardo Aguirre',
-  // TODO: replace with the public contact address.
-  email: 'hello@example.com',
+  email: 'estuardoa25@gmail.com',
   location: {
     city: 'Quetzaltenango',
     country: 'Guatemala',
