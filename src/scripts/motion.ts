@@ -8,6 +8,8 @@
  * - `data-hero` with `data-ghost` drifts the ghost down as the hero scrolls away,
  *   and `data-ghost-x` shifts it sideways with a mouse.
  */
+import { startPixelTrail } from './pixel-trail'
+
 const EASE_OUT = 'cubic-bezier(.16, 1, .3, 1)'
 const EASE_LIFT = 'cubic-bezier(.2, .7, .2, 1)'
 
@@ -160,6 +162,7 @@ if (canAnimate) {
   scrollLinked()
   if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
     ghostFollowsPointer()
+    startPixelTrail()
   }
   addEventListener('beforeprint', () => animations.forEach(animation => animation.finish()))
 }
