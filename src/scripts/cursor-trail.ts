@@ -285,11 +285,30 @@ export function startCursorTrail(): void {
       kick()
     }
   }, { passive: true })
-  addEventListener('resize', () => {
+  // The canvas buffer must match its size on screen, or everything drawn is scaled and shifted.
+  // Watch the canvas itself rather than the window: Safari's page zoom changes it with no resize event.
+  new ResizeObserver(() => {
     resize()
     kick()
-  })
+  }).observe(canvas)
+  // Moving the window to a screen with another pixel density changes only devicePixelRatio.
+  const watchDensity = () => {
+    matchMedia(`(resolution: ${devicePixelRatio}dppx)`).addEventListener('change', () => {
+      resize()
+      kick()
+      watchDensity()
+    }, { once: true })
+  }
+  watchDensity()
+
   document.documentElement.addEventListener('pointerleave', hide)
+  // A mouseout with no element to go to also means the pointer left the page. It covers exits
+  // that may send no pointerleave to <html>, like moving onto Safari's toolbar over the page.
+  document.addEventListener('mouseout', (event) => {
+    if (!event.relatedTarget) {
+      hide()
+    }
+  })
   addEventListener('blur', hide)
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {

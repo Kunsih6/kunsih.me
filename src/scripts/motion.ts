@@ -157,6 +157,11 @@ function ghostFollowsPointer() {
     ghost.style.transform = ''
   }
   document.documentElement.addEventListener('pointerleave', center)
+  document.addEventListener('mouseout', (event) => {
+    if (!event.relatedTarget) {
+      center()
+    }
+  })
   addEventListener('blur', center)
 }
 
