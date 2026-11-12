@@ -21,28 +21,24 @@ export function formatMonth(value: YearMonth, lang: Lang): string {
     .format(new Date(Date.UTC(year, month - 1, 1)))
 }
 
-/** "3 years 10 months" / "3 años 10 meses". `end` defaults to the build month. */
+/**
+ * "3 years 10 months" / "3 años 10 meses". `end` defaults to the build month.
+ *
+ * Intl picks the unit word and its plural form from CLDR data, so the message
+ * files need no plural strings. `Intl.DurationFormat` would do this in one call,
+ * but it needs Node 23+ and `engines` still allows Node 22.
+ */
 export function formatDuration(start: YearMonth, end: YearMonth | null, lang: Lang): string {
-  const t = useTranslations(lang)
-  const plural = new Intl.PluralRules(lang)
   const from = parse(start)
   const to = parse(end ?? currentYearMonth())
   const total = Math.max(1, (to.year - from.year) * 12 + (to.month - from.month))
   const years = Math.floor(total / 12)
   const months = total % 12
 
-  const parts: string[] = []
-  if (years > 0) {
-    parts.push(`${years} ${t(plural.select(years) === 'one'
-      ? 'date.year.one'
-      : 'date.year.other')}`)
-  }
-  if (months > 0) {
-    parts.push(`${months} ${t(plural.select(months) === 'one'
-      ? 'date.month.one'
-      : 'date.month.other')}`)
-  }
-  return parts.join(' ')
+  const parts = Object.entries({ year: years, month: months })
+    .filter(([, value]) => value > 0)
+    .map(([unit, value]) => new Intl.NumberFormat(lang, { style: 'unit', unit, unitDisplay: 'long' }).format(value))
+  return new Intl.ListFormat(lang, { type: 'unit', style: 'narrow' }).format(parts)
 }
 
 /** "Jan 2023 — Present" with the end month or the localized "present" label. */

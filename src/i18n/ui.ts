@@ -45,10 +45,6 @@ export const ui = {
     'theme.dark': 'Dark',
 
     'date.present': 'Present',
-    'date.year.one': 'year',
-    'date.year.other': 'years',
-    'date.month.one': 'month',
-    'date.month.other': 'months',
 
     'footer.backToTop': 'Back to top',
 
@@ -82,10 +78,6 @@ export const ui = {
     'theme.dark': 'Oscuro',
 
     'date.present': 'Actualidad',
-    'date.year.one': 'año',
-    'date.year.other': 'años',
-    'date.month.one': 'mes',
-    'date.month.other': 'meses',
 
     'footer.backToTop': 'Volver arriba',
 
