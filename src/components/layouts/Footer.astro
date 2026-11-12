@@ -1,0 +1,64 @@
+---
+import { site } from '@/config/site'
+import { getLang, useTranslations } from '@/i18n/utils'
+
+const t = useTranslations(getLang(Astro.currentLocale))
+const year = new Date().getFullYear()
+
+// Decorative barcode: bar widths in px.
+const bars = [3, 1, 2, 1, 4, 1, 1, 3, 2, 1, 4, 2, 1, 3, 1, 2, 4, 1]
+---
+
+<footer class="footer gutter">
+  <div class="barcode" aria-hidden="true">
+    {bars.map((width) => (
+      <span style={`width: ${width}px`}></span>
+    ))}
+  </div>
+  <p class="t-code t-muted signature">
+    {site.brand} // {site.author} // {site.since}—{year}
+  </p>
+  <a href="#top" class="t-label back">
+    {t('footer.backToTop')}
+  </a>
+</footer>
+
+<style>
+  .footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 40px;
+    padding-block: 32px 40px;
+  }
+
+  .barcode {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    height: 28px;
+  }
+
+  .barcode span {
+    background: var(--ink-muted);
+  }
+
+  .signature {
+    text-transform: uppercase;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ink-muted);
+    text-decoration: none;
+  }
+
+  @media (hover: hover) {
+    .back:hover {
+      color: var(--ink);
+    }
+  }
+</style>

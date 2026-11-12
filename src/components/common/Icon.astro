@@ -1,0 +1,43 @@
+---
+interface Props {
+  name: 'arrow-right' | 'arrow-up-right' | 'chevron-down' | 'theme'
+  size?: number
+  class?: string
+}
+
+const { name, size = 16, class: className } = Astro.props
+---
+
+<svg
+  class:list={['icon', className]}
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  aria-hidden="true"
+  focusable="false"
+>
+  {name === 'arrow-right' && <path d="M4 12h15M13 6l6 6-6 6" />}
+  {name === 'arrow-up-right' && <path d="M7 17L17 7M8 7h9v9" />}
+  {name === 'chevron-down' && <path d="M6 9l6 6 6-6" />}
+  {name === 'theme' && (
+    <>
+      <rect x="4" y="4" width="16" height="16" />
+      <rect x="4" y="4" width="8" height="16" class="fill" />
+    </>
+  )}
+</svg>
+
+<style>
+  .icon {
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: square;
+  }
+
+  .fill {
+    fill: currentColor;
+    stroke: none;
+  }
+</style>

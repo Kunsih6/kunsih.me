@@ -1,0 +1,120 @@
+---
+import type { Lang } from '@/i18n/ui'
+import { site } from '@/config/site'
+import { defaultLang, ogLocales } from '@/i18n/ui'
+import { alternateUrls, otherLangs, useTranslations } from '@/i18n/utils'
+
+interface Props {
+  lang: Lang
+  title: string
+  description: string
+  /** Path without the locale prefix, shared by every translation (e.g. `''`, `about`). */
+  path?: string
+  /** Absolute or root-relative image URL. Defaults to `site.ogImage`. */
+  image?: string
+  imageAlt?: string
+  noindex?: boolean
+  /** Adds Person / ProfilePage structured data. */
+  profile?: boolean
+}
+
+const {
+  lang,
+  title,
+  description,
+  path = '',
+  image = site.ogImage.src,
+  imageAlt = title,
+  noindex = false,
+  profile = false,
+} = Astro.props
+
+const t = useTranslations(lang)
+const alternates = alternateUrls(path)
+const canonical = alternates.find((a) => a.lang === lang)?.href ?? new URL(Astro.url.pathname, Astro.site).href
+const xDefault = alternates.find((a) => a.lang === defaultLang)?.href ?? canonical
+const imageUrl = new URL(image, Astro.site).href
+
+const person = {
+  '@type': 'Person',
+  '@id': `${Astro.site}#person`,
+  name: site.author,
+  alternateName: site.brand,
+  jobTitle: t('seo.jobTitle'),
+  url: xDefault,
+  image: imageUrl,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: site.location.city,
+    addressCountry: site.location.countryCode,
+  },
+  knowsLanguage: ['es', 'en'],
+  sameAs: Object.values(site.social),
+}
+
+const jsonLd = profile
+  ? {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'WebSite',
+          '@id': `${Astro.site}#website`,
+          url: xDefault,
+          name: site.brand,
+          inLanguage: Object.keys(ogLocales),
+          publisher: { '@id': person['@id'] },
+        },
+        {
+          '@type': 'ProfilePage',
+          '@id': `${canonical}#page`,
+          url: canonical,
+          name: title,
+          description,
+          inLanguage: lang,
+          isPartOf: { '@id': `${Astro.site}#website` },
+          mainEntity: person,
+        },
+      ],
+    }
+  : null
+---
+
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta name="author" content={site.author} />
+<meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large'} />
+<meta name="generator" content={Astro.generator} />
+
+{!noindex && <link rel="canonical" href={canonical} />}
+{!noindex && alternates.map(({ lang: hreflang, href }) => <link rel="alternate" hreflang={hreflang} href={href} />)}
+{!noindex && <link rel="alternate" hreflang="x-default" href={xDefault} />}
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+<meta name="color-scheme" content="dark light" />
+<meta name="theme-color" content={site.themeColor.dark} media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content={site.themeColor.light} media="(prefers-color-scheme: light)" />
+
+<!-- Open Graph -->
+<meta property="og:type" content={profile ? 'profile' : 'website'} />
+<meta property="og:site_name" content={site.brand} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:locale" content={ogLocales[lang]} />
+{otherLangs(lang).map((l) => (
+  <meta property="og:locale:alternate" content={ogLocales[l]} />
+))}
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:width" content={String(site.ogImage.width)} />
+<meta property="og:image:height" content={String(site.ogImage.height)} />
+<meta property="og:image:alt" content={imageAlt} />
+{profile && <meta property="profile:username" content={site.brand} />}
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+<meta name="twitter:image:alt" content={imageAlt} />
+
+{jsonLd && <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd)} />}

@@ -1,0 +1,66 @@
+---
+import type { ComponentProps } from 'astro/types'
+import { Font } from 'astro:assets'
+import Footer from '@/components/layouts/Footer.astro'
+import Header from '@/components/layouts/Header.astro'
+import SEO from '@/components/layouts/SEO.astro'
+import { getLang, useTranslations } from '@/i18n/utils'
+import '@/styles/global.css'
+
+type Props = Omit<ComponentProps<typeof SEO>, 'lang'> & {
+  /** Hides the section navigation (e.g. on the 404 page). */
+  minimal?: boolean
+}
+
+const { minimal = false, ...seo } = Astro.props
+const lang = getLang(Astro.currentLocale)
+const t = useTranslations(lang)
+---
+
+<!doctype html>
+<html lang={lang} data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Apply the saved or system theme before first paint to avoid a flash. -->
+    <script is:inline>
+      ;(() => {
+        let theme
+        try {
+          theme = localStorage.getItem('theme')
+        } catch {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+        }
+        document.documentElement.dataset.theme = theme
+      })()
+    </script>
+
+    <SEO lang={lang} {...seo} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+
+    <!-- Preload only the above-the-fold Latin files; latin-ext loads on demand. -->
+    <Font cssVariable="--font-display" preload={[{ subset: 'latin' }]} />
+    <Font cssVariable="--font-sans" preload={[{ subset: 'latin' }]} />
+    <Font cssVariable="--font-mono" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">
+      {t('a11y.skip')}
+    </a>
+    <Header minimal={minimal} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  main:focus {
+    outline: none;
+  }
+</style>

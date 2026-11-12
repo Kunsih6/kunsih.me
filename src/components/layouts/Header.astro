@@ -1,0 +1,255 @@
+---
+import Icon from '@/components/common/Icon.astro'
+import { site } from '@/config/site'
+import { languages, locales } from '@/i18n/ui'
+import { getLang, localizedPath, useTranslations } from '@/i18n/utils'
+
+interface Props {
+  minimal?: boolean
+}
+
+const { minimal = false } = Astro.props
+const lang = getLang(Astro.currentLocale)
+const t = useTranslations(lang)
+const home = localizedPath(lang)
+
+const links = [
+  { href: '#experience', label: t('nav.experience') },
+  { href: '#stack', label: t('nav.stack') },
+  { href: '#contact', label: t('nav.contact') },
+]
+---
+
+<header class="header">
+  <div class="bar gutter">
+    <a href={minimal ? home : '#top'} class="brand">
+      {site.brand}
+      <span class="sr-only"> — {t('a11y.home')}</span>
+    </a>
+
+    {!minimal && (
+      <nav aria-label={t('nav.label')} class="links">
+        {links.map((link) => (
+          <a href={link.href} class="link t-label">
+            {link.label}
+          </a>
+        ))}
+      </nav>
+    )}
+
+    <div class="controls">
+      <p class="status t-label">
+        <span class="dot" aria-hidden="true"></span>
+        <span>{t('status.available')}</span>
+        <span class="status-more t-muted">{t('status.mode')}</span>
+      </p>
+
+      <nav aria-label={t('lang.label')} class="lang t-label">
+        {locales.map((l, i) => (
+          <>
+            {i > 0 && <span aria-hidden="true">/</span>}
+            <a
+              href={localizedPath(l)}
+              hreflang={l}
+              lang={l}
+              aria-current={l === lang ? 'page' : undefined}
+              title={languages[l]}
+            >
+              {l.toUpperCase()}
+              <span class="sr-only"> — {languages[l]}</span>
+            </a>
+          </>
+        ))}
+      </nav>
+
+      <button
+        type="button"
+        class="theme t-label"
+        data-theme-toggle
+        data-label-light={t('theme.switchToLight')}
+        data-label-dark={t('theme.switchToDark')}
+        aria-label={t('theme.switchToLight')}
+      >
+        <Icon name="theme" />
+        <span class="theme-label" aria-hidden="true">
+          <span class="if-dark">{t('theme.light')}</span>
+          <span class="if-light">{t('theme.dark')}</span>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const root = document.documentElement
+
+  function syncLabels(button: HTMLButtonElement) {
+    const isDark = root.dataset.theme !== 'light'
+    button.setAttribute('aria-label', (isDark ? button.dataset.labelLight : button.dataset.labelDark) ?? '')
+  }
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')) {
+    syncLabels(button)
+    button.addEventListener('click', () => {
+      const next = root.dataset.theme === 'light' ? 'dark' : 'light'
+      root.dataset.theme = next
+      try {
+        localStorage.setItem('theme', next)
+      } catch {}
+      syncLabels(button)
+    })
+  }
+</script>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 24px;
+    min-height: 56px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .link,
+  .lang a,
+  .theme {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--ink-muted);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 140ms linear;
+  }
+
+  .link {
+    padding: 0 12px;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 4px 12px;
+  }
+
+  .status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 4px;
+    color: var(--signal);
+    white-space: nowrap;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: var(--signal);
+  }
+
+  .lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink-muted);
+  }
+
+  .lang a[aria-current='page'] {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+  }
+
+  .theme {
+    gap: 8px;
+    min-width: 44px;
+    padding: 0 8px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .if-light {
+    display: none;
+  }
+
+  :global([data-theme='light']) .if-light {
+    display: inline;
+  }
+
+  :global([data-theme='light']) .if-dark {
+    display: none;
+  }
+
+  @media (hover: hover) {
+    .link:hover,
+    .lang a:hover,
+    .theme:hover {
+      color: var(--ink);
+    }
+  }
+
+  @media (max-width: 1180px) {
+    .status-more {
+      display: none;
+    }
+  }
+
+  @media (max-width: 920px) {
+    .links {
+      order: 3;
+      /* Full bleed: span the gutters on both sides. */
+      flex-basis: calc(100% + 2 * var(--gutter));
+      justify-content: space-between;
+      margin: 0 calc(var(--gutter) * -1);
+      padding: 0 16px;
+      border-top: 1px solid var(--line);
+      overflow-x: auto;
+    }
+
+    .link {
+      padding: 0 6px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .theme-label {
+      display: none;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .status {
+      display: none;
+    }
+  }
+</style>
