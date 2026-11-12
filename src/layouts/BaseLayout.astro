@@ -3,8 +3,10 @@ import type { ComponentProps } from 'astro/types'
 import { Font } from 'astro:assets'
 import Footer from '@/components/layouts/Footer.astro'
 import Header from '@/components/layouts/Header.astro'
+import LanguageRedirect from '@/components/layouts/LanguageRedirect.astro'
 import SEO from '@/components/layouts/SEO.astro'
-import { getLang, useTranslations } from '@/i18n/utils'
+import { defaultLang } from '@/i18n/ui'
+import { getLang, localizedPath, useTranslations } from '@/i18n/utils'
 import '@/styles/main.css'
 
 type Props = Omit<ComponentProps<typeof SEO>, 'lang'> & {
@@ -15,6 +17,7 @@ type Props = Omit<ComponentProps<typeof SEO>, 'lang'> & {
 const { minimal = false, ...seo } = Astro.props
 const lang = getLang(Astro.currentLocale)
 const t = useTranslations(lang)
+const isDefaultHome = lang === defaultLang && Astro.url.pathname === localizedPath(defaultLang)
 ---
 
 <!doctype html>
@@ -22,6 +25,9 @@ const t = useTranslations(lang)
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- First, so a returning visitor who picked another language leaves before anything loads. -->
+    {isDefaultHome && <LanguageRedirect />}
 
     <!--
       Apply the saved or system theme before first paint to avoid a flash, and flag

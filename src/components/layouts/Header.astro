@@ -47,7 +47,7 @@ const links = [
         <span class="status-more t-muted">{t('status.mode')}</span>
       </p>
 
-      <nav aria-label={t('lang.label')} class="lang t-label">
+      <nav aria-label={t('lang.label')} class="lang t-label" data-lang-switch>
         {locales.map((l, i) => (
           <>
             {i > 0 && <span aria-hidden="true">/</span>}
@@ -163,6 +163,15 @@ const links = [
   for (const button of buttons) {
     syncLabels(button)
     button.addEventListener('click', () => switchTheme(button))
+  }
+
+  // Saves the language the visitor picks; BaseLayout brings them back to it from the default home page.
+  for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-lang-switch] a[hreflang]')) {
+    link.addEventListener('click', () => {
+      try {
+        localStorage.setItem('lang', link.hreflang)
+      } catch {}
+    })
   }
 
   // Marks the section being read in the nav. It is state, not motion, so it always runs.

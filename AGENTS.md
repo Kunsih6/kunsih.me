@@ -13,7 +13,7 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
 Group components in `src/components/` by role:
 
 - `views/`: one component per page (e.g. `HomePage.astro`). Files in `src/pages/` only render a view, so every locale route reuses the same view.
-- `layouts/`: pieces of the page shell used by `src/layouts/BaseLayout.astro` (`SEO`, `Header`, `Footer`), and `SectionLayout`, the `<section>` every content section renders in. It sets the gutters, the vertical spacing (`spacing`: `both`, `bottom` or `none`) and an optional `divider`. Pass the section's `id`, `aria-labelledby`, data hooks and `class` to it; its own styles still apply.
+- `layouts/`: pieces of the page shell used by `src/layouts/BaseLayout.astro` (`SEO`, `LanguageRedirect`, `Header`, `Footer`), and `SectionLayout`, the `<section>` every content section renders in. It sets the gutters, the vertical spacing (`spacing`: `both`, `bottom` or `none`) and an optional `divider`. Pass the section's `id`, `aria-labelledby`, data hooks and `class` to it; its own styles still apply.
 - `common/`: reusable UI building blocks (`ButtonLink`, `Icon`, `SectionHeader`).
 - `sections/`: the content sections a view is made of (`Hero`, `Experience`, ...).
 
@@ -36,6 +36,7 @@ Never import from `public/` (`~/public/...` or `../public/...`): ESLint rejects 
 - Interface strings live in `src/i18n/langs/<lang>.ts`, one file per language, and `src/i18n/ui.ts` combines them. Group them in nested objects by area (`seo: { title, description }`), not flat dotted keys (`'seo.title'`).
 - `en.ts` defines the shape (`Messages`); other language files use `satisfies Messages`, so the type checker (editor or `tsc --noEmit`) flags a missing or extra key.
 - Read strings with `t('seo.title')` from `useTranslations(lang)`. Its dotted keys (`UIKey`) are derived from `Messages`.
+- The URL sets the language (`/` English, `/es/` Spanish). The header's language switch saves the visitor's pick in `localStorage` (`lang`), and `LanguageRedirect.astro`, which `BaseLayout.astro` renders on the default home page only, sends a returning visitor to the home page of that language. Never redirect by browser language: a visitor without a saved pick, and every crawler, gets the page at its URL.
 - Don't add plural variants of units (years, months, ...) to the message files. Format them with `Intl.NumberFormat` (`style: 'unit'`), which picks the plural form per locale (see `src/utils/date.ts`).
 
 ## Motion
