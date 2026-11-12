@@ -9,8 +9,8 @@ const { en, es } = ui
 ---
 
 <BaseLayout
-  title={`404 — ${en['notFound.title']} · ${es['notFound.title']}`}
-  description={en['notFound.description']}
+  title={`404 — ${en.notFound.title} · ${es.notFound.title}`}
+  description={en.notFound.description}
   noindex
   minimal
 >
@@ -19,15 +19,15 @@ const { en, es } = ui
     <h1 class="code">404</h1>
     <div class="langs">
       <div class="lang">
-        <h2 class="t-title">{en['notFound.title']}</h2>
-        <p class="t-body-lg t-muted">{en['notFound.description']}</p>
-        <ButtonLink href={localizedPath('en')}>{en['notFound.cta']}</ButtonLink>
+        <h2 class="t-title">{en.notFound.title}</h2>
+        <p class="t-body-lg t-muted">{en.notFound.description}</p>
+        <ButtonLink href={localizedPath('en')}>{en.notFound.cta}</ButtonLink>
       </div>
       <div class="lang" lang="es">
-        <h2 class="t-title">{es['notFound.title']}</h2>
-        <p class="t-body-lg t-muted">{es['notFound.description']}</p>
+        <h2 class="t-title">{es.notFound.title}</h2>
+        <p class="t-body-lg t-muted">{es.notFound.description}</p>
         <ButtonLink href={localizedPath('es')} variant="ghost">
-          {es['notFound.cta']}
+          {es.notFound.cta}
         </ButtonLink>
       </div>
     </div>

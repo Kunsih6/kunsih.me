@@ -1,0 +1,51 @@
+/**
+ * English interface strings, grouped by area. This file defines the message
+ * shape: every other language file must provide exactly the same keys.
+ */
+const en = {
+  seo: {
+    title: 'Estuardo Aguirre — Software Engineer, Frontend & Full Stack',
+    description: 'Placeholder description: digital CV of a frontend and full stack software engineer. Experience, stack and contact.',
+    jobTitle: 'Software Engineer',
+  },
+  a11y: {
+    skip: 'Skip to content',
+    newTab: '(opens in a new tab)',
+    home: 'Home',
+  },
+  nav: {
+    label: 'Sections',
+    experience: 'Experience',
+    stack: 'Stack',
+    contact: 'Contact',
+  },
+  status: {
+    available: 'Available',
+    mode: '— Remote or hybrid',
+  },
+  lang: {
+    label: 'Language',
+    switchTo: 'Ver en español',
+  },
+  theme: {
+    switchToLight: 'Switch to light mode',
+    switchToDark: 'Switch to dark mode',
+    light: 'Light',
+    dark: 'Dark',
+  },
+  date: {
+    present: 'Present',
+  },
+  footer: {
+    backToTop: 'Back to top',
+  },
+  notFound: {
+    title: 'Page not found',
+    description: 'The page you are looking for does not exist or was moved.',
+    cta: 'Go to the home page',
+  },
+}
+
+export type Messages = typeof en
+
+export default en
