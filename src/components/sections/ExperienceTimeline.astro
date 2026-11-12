@@ -1,0 +1,206 @@
+---
+import type { Role } from '@/data/cv'
+import type { Lang } from '@/i18n/ui'
+import { currentYearMonth, formatDuration, formatMonth, formatRange, monthsBetween, parseYearMonth } from '@/utils/date'
+
+interface Props {
+  /** Roles in display order: segment `i` selects the role tab `i`. */
+  roles: Role[]
+  lang: Lang
+  /** Index of the role highlighted on first render. */
+  active?: number
+}
+
+/** A role on the bar; `index` is its position in `roles`. */
+interface RolePiece {
+  kind: 'role'
+  index: number
+  months: number
+}
+
+/** Time between roles. */
+interface GapPiece {
+  kind: 'gap'
+  months: number
+}
+
+const { roles, lang, active = 0 } = Astro.props
+
+// Oldest role on the left; the axis ends at the build month.
+const chronological = roles
+  .map((role, index) => ({ role, index }))
+  .sort((a, b) => monthsBetween(b.role.start, a.role.start))
+const from = chronological[0].role.start
+const to = currentYearMonth()
+
+// Segments are sized by months; the time between roles is drawn as one tick per month.
+const pieces: (RolePiece | GapPiece)[] = []
+let cursor = from
+for (const { role, index } of chronological) {
+  const gap = monthsBetween(cursor, role.start)
+  if (gap > 0) {
+    pieces.push({ kind: 'gap', months: gap })
+  }
+  pieces.push({ kind: 'role', index, months: Math.max(1, monthsBetween(role.start, role.end)) })
+  cursor = role.end ?? to
+}
+const tail = monthsBetween(cursor, to)
+if (tail > 0) {
+  pieces.push({ kind: 'gap', months: tail })
+}
+
+const total = pieces.reduce((sum, piece) => sum + piece.months, 0)
+const firstYear = parseYearMonth(from).year + 1
+const years = Array.from({ length: parseYearMonth(to).year - firstYear + 1 }, (_, i) => ({
+  year: firstYear + i,
+  left: (monthsBetween(from, `${firstYear + i}-1`) / total) * 100,
+  // Every other year is hidden on narrow screens.
+  minor: i % 2 === 1,
+}))
+---
+
+<div class="timeline">
+  <div class="years t-code t-muted" aria-hidden="true">
+    {years.map(({ year, left, minor }) => (
+      <span class:list={['year', { minor }]} style={`left: ${left.toFixed(2)}%`}>
+        {year}
+      </span>
+    ))}
+  </div>
+
+  <!-- A pointer shortcut only: the role tabs below are the accessible control. -->
+  <div class="bar" aria-hidden="true">
+    {pieces.map((piece) => (
+      <>
+        {piece.kind === 'role' && (
+          <button
+            type="button"
+            tabindex="-1"
+            class="segment"
+            style={`flex-grow: ${piece.months}`}
+            data-segment={piece.index}
+            data-active={piece.index === active ? '' : undefined}
+          >
+            <span></span>
+          </button>
+        )}
+        {piece.kind === 'gap' && (
+          <span class="gap" style={`flex-grow: ${piece.months}`}>
+            {Array.from({ length: piece.months }, () => (
+              <span class="tick"></span>
+            ))}
+          </span>
+        )}
+      </>
+    ))}
+  </div>
+
+  <div class="ends t-label t-muted" aria-hidden="true">
+    <span>{formatMonth(from, lang)}</span>
+    <span>{formatMonth(to, lang)}</span>
+  </div>
+
+  <p class="periods t-label t-accent">
+    {roles.map((role, i) => (
+      <span class="period" data-period={i} data-active={i === active ? '' : undefined}>
+        {formatRange(role.start, role.end, lang)} · {formatDuration(role.start, role.end, lang)}
+      </span>
+    ))}
+  </p>
+</div>
+
+<style>
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: clamp(24px, 3vw, 40px);
+  }
+
+  .years {
+    position: relative;
+    height: 20px;
+  }
+
+  .year {
+    position: absolute;
+    white-space: nowrap;
+  }
+
+  /*
+   * No flex gap: each piece is exactly as wide as its months, so its edges line up
+   * with the year labels. The 2px space between bars comes from the bars' margins.
+   */
+  .bar {
+    display: flex;
+    height: 28px;
+  }
+
+  /* Bars and ticks share one center line, so the taller active bar grows both ways. */
+  .segment,
+  .gap {
+    flex-shrink: 1;
+    flex-basis: 0;
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    height: 100%;
+  }
+
+  .segment {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .segment > span {
+    flex: 1;
+    height: 8px;
+    margin-inline: 1px;
+    background: var(--line-strong);
+    transition: background-color 140ms linear;
+  }
+
+  .segment[data-active] > span {
+    height: 14px;
+    background: var(--cobalt);
+  }
+
+  @media (hover: hover) {
+    .segment:not([data-active]):hover > span {
+      background: var(--ink);
+    }
+  }
+
+  .gap {
+    justify-content: space-evenly;
+  }
+
+  .tick {
+    width: 1px;
+    height: 8px;
+    background: var(--line-strong);
+  }
+
+  .ends {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .periods {
+    min-height: 16px;
+    margin-top: 8px;
+  }
+
+  .period:not([data-active]) {
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    .minor {
+      display: none;
+    }
+  }
+</style>

@@ -1,15 +1,17 @@
 ---
 import Icon from '@/components/common/Icon.astro'
 import SectionHeader from '@/components/common/SectionHeader.astro'
+import ExperienceTimeline from '@/components/sections/ExperienceTimeline.astro'
 import { cv } from '@/data/cv'
 import { getLang } from '@/i18n/utils'
-import { formatDuration, formatRange } from '@/utils/date'
+import { formatRange } from '@/utils/date'
 
 const lang = getLang(Astro.currentLocale)
 const { experience } = cv[lang]
+const { roles } = experience
 ---
 
-<section id="experience" class="section" aria-labelledby="experience-title">
+<section id="experience" class="section" aria-labelledby="experience-title" data-experience>
   <SectionHeader
     index={3}
     eyebrow={experience.eyebrow}
@@ -18,131 +20,198 @@ const { experience } = cv[lang]
     intro={experience.intro}
   />
 
-  <!-- Native exclusive accordion (`name`): works without JavaScript and keeps every role in the HTML. -->
-  <div class="roles">
-    {experience.roles.map((role, i) => (
-      <details class="role" name="experience" open={i === 0}>
-        <summary class="role-summary">
-          <span class="role-heading">
+  <ExperienceTimeline roles={roles} lang={lang} />
+
+  <!--
+    Document order is tab, panel, tab, panel: the order the accordion shows on small screens.
+    On large screens the tabs fill the left column and the open panel the right one.
+    Without JavaScript every panel stays visible.
+  -->
+  <div class="roles" style={`--roles: ${roles.length}`} data-roles>
+    {roles.map((role, i) => (
+      <>
+        <button
+          type="button"
+          id={`${role.id}-tab`}
+          class="tab"
+          aria-expanded={String(i === 0)}
+          aria-controls={`${role.id}-panel`}
+          style={`--row: ${i + 1}`}
+          data-tab
+        >
+          <span class="tab-text">
+            <span class="sr-only">{formatRange(role.start, role.end, lang)}</span>
             <span class="t-heading">{role.company}</span>
-            <span class="role-title t-muted">{role.title}</span>
-          </span>
-          <span class="role-period t-code t-muted">
-            <time datetime={role.start}>{formatRange(role.start, role.end, lang)}</time>
-            <span class="role-duration"> · {formatDuration(role.start, role.end, lang)}</span>
+            <span class="tab-title">{role.title}</span>
           </span>
           <Icon name="chevron-down" size={20} class="chevron" />
-        </summary>
+        </button>
 
-        <article class="role-body" aria-label={`${role.company} — ${role.title}`}>
-          {role.summary && <p class="t-body-lg">{role.summary}</p>}
-          <p class="t-code t-muted">
-            {experience.teamLabel} — {role.team}
-          </p>
-          <ul class="highlights" role="list">
-            {role.highlights.map((item) => (
-              <li>
-                <span class="bullet" aria-hidden="true"></span>
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-          <ul class="stack t-code" role="list" aria-label="Stack">
-            <li class="stack-label" aria-hidden="true">
-              Stack —
-            </li>
-            {role.stack.map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
-        </article>
-      </details>
+        <div id={`${role.id}-panel`} class="panel" role="region" aria-labelledby={`${role.id}-tab`}>
+          <div class="frame">
+            <span class="corner corner--tl" aria-hidden="true"></span>
+            <span class="corner corner--tr" aria-hidden="true"></span>
+            <span class="corner corner--bl" aria-hidden="true"></span>
+            <span class="corner corner--br" aria-hidden="true"></span>
+
+            <div class="panel-body" data-panel-body>
+              <div class="panel-head">
+                <h3 class="t-title">{role.company}</h3>
+                <p class="t-label t-accent">{role.title}</p>
+              </div>
+              {role.summary && <p class="t-body-lg">{role.summary}</p>}
+              <p class="t-code t-muted">
+                {experience.teamLabel} — {role.team}
+              </p>
+              <ul class="highlights" role="list">
+                {role.highlights.map((item) => (
+                  <li>
+                    <span class="bullet" aria-hidden="true"></span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <ul class="stack t-code" role="list" aria-label="Stack">
+                <li class="stack-label" aria-hidden="true">
+                  Stack —
+                </li>
+                {role.stack.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </>
     ))}
   </div>
 </section>
 
 <style>
+  /* ---------- Shared: tabs and panels ---------- */
+
   .roles {
     display: flex;
     flex-direction: column;
-    gap: 8px;
   }
 
-  .role {
+  .tab {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding: 20px;
     border: 1px solid var(--line);
-    transition: border-color 140ms linear;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      background-color 140ms linear,
+      border-color 140ms linear;
   }
 
-  .role[open] {
+  .tab:not(:first-child) {
+    margin-top: 8px;
+  }
+
+  .tab[aria-expanded='true'] {
+    background: var(--frost);
     border-color: var(--accent);
   }
 
-  .role-summary {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 24px;
-    padding: 20px;
-    list-style: none;
-    cursor: pointer;
-    transition: background-color 140ms linear;
-  }
-
-  .role-summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .role[open] > .role-summary {
-    background: var(--frost);
-  }
-
   @media (hover: hover) {
-    .role:not([open]) > .role-summary:hover {
+    .tab[aria-expanded='false']:hover {
       background: var(--surface);
+      border-color: var(--line-strong);
     }
   }
 
-  .role-summary:focus-visible {
+  .tab:focus-visible {
     box-shadow: inset 0 0 0 2px var(--accent);
   }
 
-  .role-heading {
-    flex: 1 1 260px;
+  .tab-text {
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     gap: 6px;
     min-width: 0;
   }
 
-  .role-title {
+  .tab-title {
+    color: var(--ink-muted);
     font-size: 13px;
     line-height: 20px;
   }
 
-  .role-period {
-    text-transform: uppercase;
-  }
-
-  .role[open] .role-period {
-    color: var(--accent);
-  }
-
-  .role-summary :global(.chevron) {
+  .tab :global(.chevron) {
+    flex: none;
     transition: transform 140ms linear;
   }
 
-  .role[open] .role-summary :global(.chevron) {
+  .tab[aria-expanded='true'] :global(.chevron) {
     transform: rotate(180deg);
   }
 
-  .role-body {
+  /* Only one panel is open once the script can switch them. */
+  :global(:root[data-js]) .tab[aria-expanded='false'] + .panel {
+    display: none;
+  }
+
+  .frame {
+    position: relative;
+  }
+
+  .corner {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    margin: -1px;
+    border: 0 solid var(--accent);
+    pointer-events: none;
+  }
+
+  .corner--tl {
+    top: 0;
+    left: 0;
+    border-width: 2px 0 0 2px;
+  }
+
+  .corner--tr {
+    top: 0;
+    right: 0;
+    border-width: 2px 2px 0 0;
+  }
+
+  .corner--bl {
+    bottom: 0;
+    left: 0;
+    border-width: 0 0 2px 2px;
+  }
+
+  .corner--br {
+    right: 0;
+    bottom: 0;
+    border-width: 0 2px 2px 0;
+  }
+
+  .panel-body {
     display: flex;
     flex-direction: column;
     gap: 24px;
-    padding: 24px 20px;
   }
 
-  .role-body > p {
+  .panel-head {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  /* Reading measure: text does not stretch with the panel on wide screens. */
+  .panel-body > p,
+  .highlights li > span:last-child {
     max-width: 58ch;
   }
 
@@ -156,7 +225,6 @@ const { experience } = cv[lang]
     display: flex;
     align-items: baseline;
     gap: 16px;
-    max-width: 72ch;
     padding: 14px 0;
     border-top: 1px solid var(--line);
   }
@@ -182,9 +250,168 @@ const { experience } = cv[lang]
     color: var(--ink);
   }
 
-  @media (max-width: 600px) {
-    .role-duration {
+  /* ---------- Small screens: accordion, each panel opens under its tab ---------- */
+
+  @media (max-width: 919px) {
+    .frame {
+      padding: 20px;
+      border: 1px solid var(--accent);
+      border-top: 0;
+    }
+
+    .corner {
       display: none;
+    }
+
+    /* The tab already shows the company; the heading stays for screen readers. */
+    .panel-head {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  /* ---------- Large screens: tabs on the left, open panel on the right ---------- */
+
+  @media (min-width: 920px) {
+    .frame {
+      padding: 24px;
+      border: 1px solid var(--line);
+    }
+
+    .panel-body {
+      padding: clamp(0px, 1.2vw, 16px);
+    }
+
+    .tab :global(.chevron) {
+      display: none;
+    }
+
+    :global(:root[data-js]) .roles {
+      display: grid;
+      grid-template-columns: minmax(300px, 400px) minmax(0, 1fr);
+      grid-template-rows: repeat(var(--roles), auto) 1fr;
+      gap: 8px 24px;
+    }
+
+    :global(:root[data-js]) .tab {
+      grid-column: 1;
+      grid-row: var(--row);
+      margin-top: 0;
+    }
+
+    :global(:root[data-js]) .panel {
+      grid-column: 2;
+      grid-row: 1 / -1;
+      align-self: start;
+      min-width: 0;
     }
   }
 </style>
+
+<script>
+  // Keep in sync with the 920px breakpoint in the styles above.
+  const smallScreen = matchMedia('(max-width: 919px)')
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)')
+
+  for (const section of document.querySelectorAll<HTMLElement>('[data-experience]')) {
+    const tabs = [...section.querySelectorAll<HTMLButtonElement>('[data-tab]')]
+    const marks = [...section.querySelectorAll<HTMLElement>('[data-segment], [data-period]')]
+
+    const current = () => tabs.findIndex((tab) => tab.getAttribute('aria-expanded') === 'true')
+    let last = Math.max(0, current())
+
+    const panelOf = (tab: HTMLElement) => document.getElementById(tab.getAttribute('aria-controls') ?? '')
+
+    /** Brings the opened tab back below the sticky header after the panel above it closes. */
+    const keepInView = (tab: HTMLElement) => {
+      const header = document.querySelector('header')
+      const limit = (header?.getBoundingClientRect().height ?? 0) + 12
+      const { top } = tab.getBoundingClientRect()
+      if (top < limit || top > innerHeight - 80) {
+        scrollTo({ top: scrollY + top - limit, behavior: 'instant' })
+      }
+    }
+
+    /** Fades the new panel's blocks in, one after another. */
+    const reveal = (panel: HTMLElement | null) => {
+      if (reducedMotion.matches) {
+        return
+      }
+      const blocks = panel?.querySelector('[data-panel-body]')?.children ?? []
+      Array.from(blocks).forEach((block, i) =>
+        block.animate(
+          [
+            { opacity: 0, transform: 'translateY(8px)' },
+            { opacity: 1, transform: 'none' },
+          ],
+          { duration: 180, delay: i * 45, easing: 'linear', fill: 'backwards' },
+        ),
+      )
+    }
+
+    /** Opens role `index` (or closes every role with -1) and highlights it on the timeline. */
+    const select = (index: number, { focus = false, user = false } = {}) => {
+      // On small screens it is an accordion: tapping the open role closes it.
+      if (user && smallScreen.matches && index === current()) {
+        index = -1
+      }
+      const changed = index >= 0 && index !== current()
+
+      tabs.forEach((tab, i) => tab.setAttribute('aria-expanded', String(i === index)))
+      for (const mark of marks) {
+        mark.toggleAttribute('data-active', Number(mark.dataset.segment ?? mark.dataset.period) === index)
+      }
+
+      const tab = tabs[index]
+      if (!tab) {
+        return
+      }
+      last = index
+      if (focus) {
+        tab.focus({ preventScroll: smallScreen.matches })
+      }
+      if (changed && smallScreen.matches) {
+        keepInView(tab)
+      }
+      if (changed) {
+        reveal(panelOf(tab))
+      }
+    }
+
+    tabs.forEach((tab, i) => tab.addEventListener('click', () => select(i, { user: true })))
+
+    // Timeline segments pick the role and move focus to its tab.
+    for (const segment of section.querySelectorAll<HTMLElement>('[data-segment]')) {
+      segment.addEventListener('click', () => select(Number(segment.dataset.segment), { focus: true }))
+    }
+
+    // Arrow keys, Home and End move focus between the tabs; Enter or Space opens one.
+    section.querySelector<HTMLElement>('[data-roles]')?.addEventListener('keydown', (event) => {
+      const index = tabs.indexOf(document.activeElement as HTMLButtonElement)
+      const moves: Partial<Record<string, number>> = {
+        ArrowDown: (index + 1) % tabs.length,
+        ArrowUp: (index - 1 + tabs.length) % tabs.length,
+        Home: 0,
+        End: tabs.length - 1,
+      }
+      const next = moves[event.key]
+      if (index < 0 || next === undefined) {
+        return
+      }
+      event.preventDefault()
+      tabs[next].focus()
+    })
+
+    // On large screens a role is always open.
+    smallScreen.addEventListener('change', () => {
+      if (!smallScreen.matches && current() < 0) {
+        select(last)
+      }
+    })
+  }
+</script>

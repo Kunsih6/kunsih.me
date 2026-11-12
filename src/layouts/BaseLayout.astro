@@ -23,9 +23,13 @@ const t = useTranslations(lang)
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Apply the saved or system theme before first paint to avoid a flash. -->
+    <!--
+      Apply the saved or system theme before first paint to avoid a flash, and flag
+      that scripts run (`data-js`) so interactive components can style their initial state.
+    -->
     <script is:inline>
       ;(() => {
+        document.documentElement.dataset.js = ''
         let theme
         try {
           theme = localStorage.getItem('theme')

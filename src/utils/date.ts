@@ -4,19 +4,27 @@ import { useTranslations } from '@/i18n/utils'
 /** A calendar month in `YYYY-MM` format. */
 export type YearMonth = `${number}-${number}`
 
-function parse(value: YearMonth): { year: number, month: number } {
+export function parseYearMonth(value: YearMonth): { year: number, month: number } {
   const [year, month] = value.split('-').map(Number)
   return { year, month }
 }
 
-function currentYearMonth(): YearMonth {
+/** The build month: the end of ongoing roles and of the experience timeline. */
+export function currentYearMonth(): YearMonth {
   const now = new Date()
   return `${now.getUTCFullYear()}-${now.getUTCMonth() + 1}`
 }
 
+/** Months from `start` to `end`; a `null` end means the build month. */
+export function monthsBetween(start: YearMonth, end: YearMonth | null): number {
+  const from = parseYearMonth(start)
+  const to = parseYearMonth(end ?? currentYearMonth())
+  return (to.year - from.year) * 12 + (to.month - from.month)
+}
+
 /** "Jan 2023" / "ene 2023". */
 export function formatMonth(value: YearMonth, lang: Lang): string {
-  const { year, month } = parse(value)
+  const { year, month } = parseYearMonth(value)
   return new Intl.DateTimeFormat(lang, { month: 'short', year: 'numeric', timeZone: 'UTC' })
     .format(new Date(Date.UTC(year, month - 1, 1)))
 }
@@ -29,9 +37,7 @@ export function formatMonth(value: YearMonth, lang: Lang): string {
  * but it needs Node 23+ and `engines` still allows Node 22.
  */
 export function formatDuration(start: YearMonth, end: YearMonth | null, lang: Lang): string {
-  const from = parse(start)
-  const to = parse(end ?? currentYearMonth())
-  const total = Math.max(1, (to.year - from.year) * 12 + (to.month - from.month))
+  const total = Math.max(1, monthsBetween(start, end))
   const years = Math.floor(total / 12)
   const months = total % 12
 
