@@ -9,7 +9,7 @@ import { getLang } from '@/i18n/utils'
 const { hero } = cv[getLang(Astro.currentLocale)]
 ---
 
-<SectionLayout class="hero" spacing="none" divider aria-labelledby="content" data-hero>
+<SectionLayout class="hero" spacing="none" divider aria-labelledby="content">
   <div class="inner">
     <div class="meta t-code t-muted">
       <span>N° 001 // KS-CV // {hero.updated}</span>
@@ -20,7 +20,7 @@ const { hero } = cv[getLang(Astro.currentLocale)]
 
     <div class="word" role="img" aria-label={site.brand}>
       <!-- Each layer moves on its own: scroll drift, pointer lean, then the intro. -->
-      <div class="ghost" data-ghost>
+      <div class="ghost">
         <div class="ghost-x" data-ghost-x>
           <Wordmark outline class="ghost-letters" />
         </div>
@@ -100,7 +100,7 @@ const { hero } = cv[getLang(Astro.currentLocale)]
     height: auto;
   }
 
-  /* `translate` composes with the scroll drift that motion.ts sets as `transform`. */
+  /* `translate` composes with the scroll drift, which animates `transform`. */
   .ghost {
     translate: var(--echo-x) var(--echo-y);
   }
@@ -263,6 +263,24 @@ const { hero } = cv[getLang(Astro.currentLocale)]
     .meta > span + span {
       animation-delay: 1140ms;
     }
+
+    /*
+     * The echo drifts down 72px as the hero scrolls away: from its top reaching the viewport top
+     * to its bottom doing so. Decorative, so browsers without support leave it in place.
+     */
+    @supports ((animation-timeline: view()) and (animation-range: entry)) {
+      .hero {
+        view-timeline: --hero block;
+        /* From the viewport edge, not from the scroll padding under the sticky header. */
+        view-timeline-inset: 0;
+      }
+
+      .ghost {
+        animation: hero-drift auto linear both;
+        animation-timeline: --hero;
+        animation-range: exit-crossing;
+      }
+    }
   }
 
   @keyframes hero-lift {
@@ -282,6 +300,12 @@ const { hero } = cv[getLang(Astro.currentLocale)]
     from {
       opacity: 0;
       transform: translate(calc(-1 * var(--echo-x)), calc(-1 * var(--echo-y)));
+    }
+  }
+
+  @keyframes hero-drift {
+    to {
+      transform: translateY(72px);
     }
   }
 

@@ -3,10 +3,10 @@
  * - `data-reveal="up"` fades and lifts the element in when it scrolls into view.
  * - `data-reveal="words" | "chars"` raises the masked parts of a `SplitText` inside it.
  * - `data-reveal-delay` delays either one, in ms.
- * - `data-scrub` brightens its word spans as it scrolls through the viewport.
- * - `data-progress` is scaled with the page scroll.
- * - `data-hero` with `data-ghost` drifts the ghost down as the hero scrolls away,
- *   and `data-ghost-x` shifts it sideways with a mouse.
+ * - `data-ghost-x` shifts the hero's echo sideways with a mouse.
+ *
+ * Effects that follow the scroll position (the reading progress, the profile statement, the hero
+ * echo's drift) are CSS scroll-driven animations in their components.
  */
 import { startPixelTrail } from './pixel-trail'
 
@@ -14,8 +14,6 @@ const EASE_OUT = 'cubic-bezier(.16, 1, .3, 1)'
 const EASE_LIFT = 'cubic-bezier(.2, .7, .2, 1)'
 
 const animations = new Set<Animation>()
-
-const clamp = (n: number) => Math.min(1, Math.max(0, n))
 
 /** A paused animation that holds its first frame until played, then lets go of its styles. */
 function prepare(el: Element, keyframes: Keyframe[], options: KeyframeAnimationOptions): Animation {
@@ -81,53 +79,6 @@ function reveals() {
   pending.forEach((_, el) => observer.observe(el))
 }
 
-function scrollLinked() {
-  const progress = document.querySelector<HTMLElement>('[data-progress]')
-  const scrub = document.querySelector<HTMLElement>('[data-scrub]')
-  const words = scrub
-    ? [
-        ...scrub.querySelectorAll<HTMLElement>(':scope > span'),
-      ]
-    : []
-  const hero = document.querySelector<HTMLElement>('[data-hero]')
-  const ghost = hero?.querySelector<HTMLElement>('[data-ghost]')
-
-  let frame = 0
-  const update = () => {
-    frame = 0
-    const viewport = innerHeight
-    const max = document.documentElement.scrollHeight - viewport
-
-    if (progress) {
-      progress.style.transform = `scaleX(${max > 8
-        ? clamp(scrollY / max).toFixed(4)
-        : 0})`
-    }
-
-    // p is 0 when the statement's top meets the viewport bottom and 1 when its bottom reaches 90%;
-    // every word is lit by p ≈ 0.8.
-    if (scrub) {
-      const { top, height } = scrub.getBoundingClientRect()
-      const p = clamp((viewport - top) / (height + viewport * 0.1))
-      words.forEach((word, i) => {
-        word.style.opacity = (0.2 + 0.8 * clamp(p * (words.length + 3) - i)).toFixed(3)
-      })
-    }
-
-    if (hero && ghost) {
-      const { top, height } = hero.getBoundingClientRect()
-      ghost.style.transform = `translate3d(0, ${(clamp(-top / (height || 1)) * 72).toFixed(1)}px, 0)`
-    }
-  }
-
-  const schedule = () => {
-    frame ||= requestAnimationFrame(update)
-  }
-  addEventListener('scroll', schedule, { passive: true })
-  addEventListener('resize', schedule)
-  update()
-}
-
 function ghostFollowsPointer() {
   const ghost = document.querySelector<HTMLElement>('[data-ghost-x]')
   if (!ghost) {
@@ -159,7 +110,6 @@ const canAnimate = matchMedia('(prefers-reduced-motion: no-preference)').matches
 
 if (canAnimate) {
   reveals()
-  scrollLinked()
   if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
     ghostFollowsPointer()
     startPixelTrail()

@@ -45,7 +45,8 @@ Never import from `public/` (`~/public/...` or `../public/...`): ESLint rejects 
 
 - Content must be readable without motion or JavaScript: render every element in its final state and only hide it right before it animates.
 - Animate on page load with CSS keyframes inside `@media (prefers-reduced-motion: no-preference)` (see the hero intro in `Hero.astro`).
-- For scroll reveals, add `data-reveal="up"` (or `"words"` / `"chars"` around a `SplitText`) and an optional `data-reveal-delay` in ms. `src/scripts/motion.ts` handles them, along with the other scroll- and pointer-linked effects, and does nothing under reduced motion.
+- For scroll reveals, add `data-reveal="up"` (or `"words"` / `"chars"` around a `SplitText`) and an optional `data-reveal-delay` in ms. `src/scripts/motion.ts` handles them, along with the pointer-linked effects, and does nothing under reduced motion.
+- Effects that follow the scroll position (the reading progress, the profile statement, the hero echo) are CSS scroll-driven animations (`animation-timeline`) inside `@media (prefers-reduced-motion: no-preference)` and `@supports`. They are decorative, so browsers without support show the static state and get no JS fallback.
 - A `clip-path` keyframe needs `inset()` at both ends: `none` cannot be interpolated, so the animation would jump.
 
 ## Share images

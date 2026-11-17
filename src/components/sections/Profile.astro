@@ -6,7 +6,7 @@ import { getLang } from '@/i18n/utils'
 
 const { profile } = cv[getLang(Astro.currentLocale)]
 
-// One span per word, so motion.ts can light the statement up word by word while it scrolls.
+// One span per word, so the statement can light up word by word while it scrolls (see the styles).
 const words = [
   ...profile.statement
     .trim()
@@ -25,12 +25,12 @@ const words = [
       id="profile-title"
       class="t-title statement"
       aria-label={`${profile.statement} ${profile.statementAccent}`}
-      data-scrub
+      style={`--steps: ${words.length + 3}`}
     >
       {words.map((word, i) => (
         <>
           {i > 0 && ' '}
-          <span class:list={{ 't-accent': word.accent }} aria-hidden="true">
+          <span class:list={{ 't-accent': word.accent }} style={`--i: ${i}`} aria-hidden="true">
             {word.text}
           </span>
         </>
@@ -51,6 +51,34 @@ const words = [
 <style>
   .statement {
     max-width: 28em;
+  }
+
+  /*
+   * Over the scroll from the statement's top meeting the viewport bottom to its bottom being 10vh
+   * above it, each word in turn brightens over one of `--steps` equal parts: the last one is lit
+   * about 80% of the way through. Decorative, so browsers without support show it fully lit.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports ((animation-timeline: view()) and (animation-range: entry)) {
+      .statement {
+        view-timeline: --statement block;
+      }
+
+      .statement > span {
+        --scroll: calc(100% + 10vh);
+
+        animation: statement-word auto linear both;
+        animation-timeline: --statement;
+        animation-range-start: entry calc(var(--scroll) * var(--i) / var(--steps));
+        animation-range-end: entry calc(var(--scroll) * (var(--i) + 1) / var(--steps));
+      }
+    }
+  }
+
+  @keyframes statement-word {
+    from {
+      opacity: 0.2;
+    }
   }
 
   .facts {

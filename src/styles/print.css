@@ -13,8 +13,6 @@
   /* Elements that src/scripts/motion.ts hides, moves or dims before they animate. */
   [data-reveal],
   [data-mask] > *,
-  [data-scrub] > span,
-  [data-ghost],
   [data-ghost-x] {
     opacity: 1 !important;
     transform: none !important;
