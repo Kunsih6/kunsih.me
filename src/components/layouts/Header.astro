@@ -126,6 +126,8 @@ const home = localizedPath(lang)
       border-top: 1px solid var(--line);
       overflow-x: auto;
       --nav-link-pad: 6px;
+      /* The scroll box clips anything outside it, so the ring sits inside each link here. */
+      --focus-ring: inset 0 0 0 2px var(--accent);
     }
   }
 </style>
