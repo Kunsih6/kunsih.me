@@ -4,6 +4,12 @@
   box-shadow: var(--focus-ring);
 }
 
+/* The skip link's target, a view's h1, takes focus only to move the reading position there. */
+#content:focus {
+  outline: none;
+  box-shadow: none;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;

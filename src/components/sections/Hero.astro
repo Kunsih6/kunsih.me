@@ -9,7 +9,7 @@ import { getLang } from '@/i18n/utils'
 const { hero } = cv[getLang(Astro.currentLocale)]
 ---
 
-<SectionLayout class="hero" spacing="none" divider aria-labelledby="hero-title" data-hero>
+<SectionLayout class="hero" spacing="none" divider aria-labelledby="content" data-hero>
   <div class="inner">
     <div class="meta t-code t-muted">
       <span>N° 001 // KS-CV // {hero.updated}</span>
@@ -34,7 +34,7 @@ const { hero } = cv[getLang(Astro.currentLocale)]
 
     <div class="bottom">
       <div class="copy">
-        <h1 id="hero-title" class="headline">
+        <h1 id="content" class="headline" tabindex="-1">
           {hero.headline}
         </h1>
         <p class="t-body-lg t-muted intro">{hero.intro}</p>

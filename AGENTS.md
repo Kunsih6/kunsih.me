@@ -12,7 +12,7 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
 
 Group components in `src/components/` by role:
 
-- `views/`: one component per page (e.g. `HomePage.astro`). Files in `src/pages/` only render a view, so every locale route reuses the same view.
+- `views/`: one component per page (e.g. `HomePage.astro`). Files in `src/pages/` only render a view, so every locale route reuses the same view. Each view's `<h1>` has `id="content"` and `tabindex="-1"`: it is the target of the skip link in `BaseLayout.astro`.
 - `layouts/`: pieces of the page shell used by `src/layouts/BaseLayout.astro` (`SEO`, `LanguageRedirect`, `Header`, `Footer`), and `SectionLayout`, the `<section>` every content section renders in. It sets the gutters, the vertical spacing (`spacing`: `both`, `bottom` or `none`) and an optional `divider`. Pass the section's `id`, `aria-labelledby`, data hooks and `class` to it; its own styles still apply.
 - `layouts/header/`: the pieces of the header (`SectionNav`, `StatusBadge`, `LanguageSwitch`, `ThemeToggle`), each with its own markup, script and styles. `Header` lays out the bar and passes `class` to the pieces it places.
 - `common/`: reusable UI building blocks (`ButtonLink`, `NavControl`, `Icon`, `SectionHeader`). `NavControl` is a link or button of a navigation bar: it renders an `<a>` when given `href` and a `<button type="button">` otherwise. A current item (`aria-current`) keeps the color its parent sets, also on hover.

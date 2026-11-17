@@ -11,7 +11,9 @@ const t = useTranslations(lang)
 <BaseLayout title={`404 — ${t('notFound.title')}`} description={t('notFound.description')} noindex minimal>
   <SectionLayout class="not-found">
     <p class="t-label t-muted">ERR // 404</p>
-    <h1 class="code">404</h1>
+    <h1 id="content" class="code" tabindex="-1">
+      404
+    </h1>
     <div class="message">
       <h2 class="t-title">{t('notFound.title')}</h2>
       <p class="t-body-lg t-muted">{t('notFound.description')}</p>

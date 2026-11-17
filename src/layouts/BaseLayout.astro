@@ -54,12 +54,12 @@ const isDefaultHome = lang === defaultLang && Astro.url.pathname === localizedPa
     <Font cssVariable="--font-sans" preload={[{ subset: 'latin' }]} />
     <Font cssVariable="--font-mono" />
   </head>
-  <body>
-    <a href="#main" class="skip-link">
+  <body id="top">
+    <a href="#content" class="skip-link">
       {t('a11y.skip')}
     </a>
     <Header minimal={minimal} />
-    <main id="main" tabindex="-1">
+    <main>
       <slot />
     </main>
     <Footer />
@@ -67,10 +67,6 @@ const isDefaultHome = lang === defaultLang && Astro.url.pathname === localizedPa
 </html>
 
 <style>
-  main:focus {
-    outline: none;
-  }
-
   .skip-link {
     position: absolute;
     top: -80px;
