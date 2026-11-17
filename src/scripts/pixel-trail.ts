@@ -1,6 +1,7 @@
 /*
  * With a mouse, the pointer lights a short trail of squares on a fixed grid behind it. Once it
- * rests, a round patch of squares breathes around it. Neither replaces the system cursor.
+ * rests, a round patch of squares breathes around it a few times and fades out. Neither replaces
+ * the system cursor.
  */
 
 /** Grid step, px. */
@@ -22,6 +23,11 @@ const MAX_PIXELS = 480
 const IDLE = 4000
 /** ms for one breath, in and out. */
 const BREATH = 2000
+/**
+ * Breaths before the patch fades out for good. Motion that starts on its own must stop within
+ * 5 seconds, or offer a control to pause it (WCAG 2.2.2).
+ */
+const BREATHS = 2
 /** Patch radius at the top of a breath, in squares. */
 const BREATH_RADIUS = 7
 /** Patch radius at the bottom of a breath, as a share of the top. */
@@ -70,6 +76,8 @@ export function startPixelTrail(): void {
   /** Where the pointer rests, px, and when the patch started breathing (0 while it isn't). */
   let restAt: [x: number, y: number] = [0, 0]
   let breathStart = 0
+  /** The pointer hasn't left its resting place since the patch started, even if it has faded out. */
+  let resting = false
   /** The patch as last drawn, and what it was drawn from: an unchanged key skips the redraw. */
   let breath: Square[] = []
   let breathKey = ''
@@ -108,8 +116,9 @@ export function startPixelTrail(): void {
     // 0 at the bottom of a breath, 1 at the top.
     const depth = (1 - Math.cos((2 * Math.PI * t) / BREATH)) / 2
     const radius = BREATH_RADIUS * (BREATH_LOW + (1 - BREATH_LOW) * depth)
-    // The first breath in fades the patch in from nothing; after that it never drops below 40%.
-    const strength = t < BREATH / 2
+    // The first breath in fades the patch in from nothing and the last breath out fades it away;
+    // in between it never drops below 40%.
+    const strength = t < BREATH / 2 || t > (BREATHS - 0.5) * BREATH
       ? depth
       : 0.4 + 0.6 * depth
     return [Math.round(radius * 4) / 4, (BREATH_ALPHA * Math.ceil(strength * 8)) / 8]
@@ -133,6 +142,9 @@ export function startPixelTrail(): void {
 
   const frame = (now: number) => {
     raf = 0
+    if (breathStart && now - breathStart >= BREATHS * BREATH) {
+      breathStart = 0
+    }
     const breathing = breathStart > 0 && last !== null
     const shape = breathing
       ? breathAt(now - breathStart)
@@ -178,6 +190,7 @@ export function startPixelTrail(): void {
   /** Stops the breathing and leaves the patch to fade out like the trail. */
   const wake = () => {
     clearTimeout(idleTimer)
+    resting = false
     if (!breathStart) {
       return
     }
@@ -196,6 +209,7 @@ export function startPixelTrail(): void {
     idleTimer = window.setTimeout(() => {
       if (last) {
         breathStart = performance.now()
+        resting = true
         kick()
       }
     }, IDLE)
@@ -209,7 +223,8 @@ export function startPixelTrail(): void {
     if (!last && !event.clientX && !event.clientY) {
       return
     }
-    if (breathStart && Math.hypot(event.clientX - restAt[0], event.clientY - restAt[1]) < JITTER) {
+    // Nor does it start the wait for another patch once this one has faded out.
+    if (resting && Math.hypot(event.clientX - restAt[0], event.clientY - restAt[1]) < JITTER) {
       return
     }
     restAt = [event.clientX, event.clientY]
